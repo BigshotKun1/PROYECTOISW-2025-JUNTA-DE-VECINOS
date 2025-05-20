@@ -3,6 +3,7 @@ import User from "../entity/user.entity.js";
 import { AppDataSource } from "./configDb.js";
 import { encryptPassword } from "../helpers/bcrypt.helper.js";
 
+/*
 async function createUsers() {
   try {
     const userRepository = AppDataSource.getRepository(User);
@@ -81,4 +82,4 @@ async function createUsers() {
   }
 }
 
-export { createUsers };
+export { createUsers }; */
