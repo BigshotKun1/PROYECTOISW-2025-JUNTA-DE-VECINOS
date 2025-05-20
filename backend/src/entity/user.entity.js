@@ -5,7 +5,7 @@ const UserSchema = new EntitySchema({
   name: "User",
   tableName: "users",
   columns: {
-    id: {
+    id_usuario: {
       type: "int",
       primary: true,
       generated: true,
@@ -27,11 +27,6 @@ const UserSchema = new EntitySchema({
       nullable: false,
       unique: true,
     },
-    rol: {
-      type: "varchar",
-      length: 50,
-      nullable: false,
-    },
     password: {
       type: "varchar",
       nullable: false,
@@ -47,16 +42,52 @@ const UserSchema = new EntitySchema({
       onUpdate: "CURRENT_TIMESTAMP",
       nullable: false,
     },
+    id_rol: {
+      type: "int",
+      nullable: false,
+    },
   },
   indices: [
     {
       name: "IDX_USER",
-      columns: ["id"],
+      columns: ["id_usuario"],
       unique: true,
     },
     {
       name: "IDX_USER_RUT",
       columns: ["rut"],
+      unique: true,
+    },
+    {
+      name: "IDX_USER_EMAIL",
+      columns: ["email"],
+      unique: true,
+    },
+  ], relations: {
+    directivas: {
+      target: "Directiva",
+      type: "one-to-many",
+      inverseSide: "id_usuario",  // corresponde al campo de la relación many-to-one en Directiva
+    },
+    votaciones: {
+      target: "Votaciones",
+      type: "one-to-many",
+      inverseSide: "id_usuario",  // corresponde al campo many-to-one en Votaciones
+    },
+    rol: {
+      target: "Rol",
+      type: "many-to-one",
+      joinColumn: {
+        name: "id_rol",
+        referencedColumnName: "id_rol",
+      },
+      nullable: false,
+    },
+  },
+  indices: [
+    {
+      name: "IDX_USER_ID",
+      columns: ["id_usuario"],
       unique: true,
     },
     {
