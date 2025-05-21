@@ -73,7 +73,7 @@ async function setupAPI() {
   try {
     await connectDB();
     await setupServer();
-    await createUsers();
+    //await createUsers();
   } catch (error) {
     console.log("Error en index.js -> setupAPI(), el error es: ", error);
   }
