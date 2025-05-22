@@ -1,9 +1,11 @@
 "use strict";
 import User from "../entity/user.entity.js";
+import Rol from "../entity/rol.js";
+
 import { AppDataSource } from "./configDb.js";
 import { encryptPassword } from "../helpers/bcrypt.helper.js";
 
-/*
+
 async function createUsers() {
   try {
     const userRepository = AppDataSource.getRepository(User);
@@ -18,63 +20,45 @@ async function createUsers() {
           rut: "21.308.770-3",
           email: "administrador2024@gmail.cl",
           password: await encryptPassword("admin1234"),
-          rol: "administrador",
+          id_rol: 1,
         }),
       ),
       userRepository.save(
         userRepository.create({
           nombreCompleto: "Diego Sebastián Ampuero Belmar",
           rut: "21.151.897-9",
-          email: "usuario1.2024@gmail.cl",
-          password: await encryptPassword("user1234"),
-          rol: "usuario",
+          email: "vecino1.2024@gmail.cl",
+          password: await encryptPassword("vecino1234"),
+          id_rol: 2,
         })
       ),
-        userRepository.save(
-          userRepository.create({
-            nombreCompleto: "Alexander Benjamín Marcelo Carrasco Fuentes",
-            rut: "20.630.735-8",
-            email: "usuario2.2024@gmail.cl",
-            password: await encryptPassword("user1234"),
-            rol: "usuario",
-          }),
+      userRepository.save(
+        userRepository.create({
+          nombreCompleto: "Vicente Castillo González",
+          rut: "21.005.789-7",
+          email: "presidente2024@gmail.cl",
+          password: await encryptPassword("presidente1234"),
+          id_rol: 3,
+        })
       ),
       userRepository.save(
         userRepository.create({
-          nombreCompleto: "Pablo Andrés Castillo Fernández",
-          rut: "20.738.450-K",
-          email: "usuario3.2024@gmail.cl",
-          password: await encryptPassword("user1234"),
-          rol: "usuario",
-        }),
+          nombreCompleto: "Jose Manuel Araya",
+          rut: "21.005.123-3",
+          email: "tesorero2024@gmail.cl",
+          password: await encryptPassword("tesorero1234"),
+          id_rol: 5,
+        })
       ),
       userRepository.save(
         userRepository.create({
-          nombreCompleto: "Felipe Andrés Henríquez Zapata",
-          rut: "20.976.635-3",
-          email: "usuario4.2024@gmail.cl",
-          password: await encryptPassword("user1234"),
-          rol: "usuario",
-        }),
-      ),
-      userRepository.save(
-        userRepository.create({
-          nombreCompleto: "Diego Alexis Meza Ortega",
-          rut: "21.172.447-1",
-          email: "usuario5.2024@gmail.cl",
-          password: await encryptPassword("user1234"),
-          rol: "usuario",
-        }),
-      ),
-      userRepository.save(
-        userRepository.create({
-          nombreCompleto: "Juan Pablo Rosas Martin",
-          rut: "20.738.415-1",
-          email: "usuario6.2024@gmail.cl",
-          password: await encryptPassword("user1234"),
-          rol: "usuario",
-        }),
-      ),
+          nombreCompleto: "Marcos Araya",
+          rut: "22.123.765-4",
+          email: "secretario2024@gmail.cl",
+          password: await encryptPassword("secretario1234"),
+          id_rol: 4,
+        })
+      )
     ]);
     console.log("* => Usuarios creados exitosamente");
   } catch (error) {
@@ -82,4 +66,42 @@ async function createUsers() {
   }
 }
 
-export { createUsers }; */
+async function crearRoles() {
+  try {
+    const rolRepository = AppDataSource.getRepository(Rol);
+
+    const count = await rolRepository.count();
+    if (count > 0) return;
+
+    await Promise.all([
+      rolRepository.save(
+        rolRepository.create({
+        nombreRol: "Administrador",
+        }),
+      ),
+      rolRepository.save(
+        rolRepository.create({
+          nombreRol: "Vecino",
+        }),
+      ),
+      rolRepository.save(
+        rolRepository.create({
+        nombreRol: "Presidente",
+        }),
+      ),
+      rolRepository.save(
+        rolRepository.create({
+        nombreRol: "Secretario",
+        }),
+      ),
+      rolRepository.save(
+        rolRepository.create({
+        nombreRol: "Tesorero",
+        }),
+      )
+      ])
+    } catch (error) {
+    console.error("Error al crear roles:", error);
+  }
+}
+export { crearRoles, createUsers }; 

@@ -1,12 +1,14 @@
 "use strict";
 import { Router } from "express";
 import userRoutes from "./user.routes.js";
-import authRoutes from "./auth.routes.js";
+import authRoutes from "./auth.routes.js";  
+import directivaRoutes from "./directiva.routes.js";
 
 const router = Router();
 
 router
     .use("/auth", authRoutes)
-    .use("/user", userRoutes);
+    .use("/user", userRoutes)
+    .use("/directiva", directivaRoutes);
 
 export default router;

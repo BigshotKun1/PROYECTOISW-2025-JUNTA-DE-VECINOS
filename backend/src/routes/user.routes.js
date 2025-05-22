@@ -13,7 +13,7 @@ const router = Router();
 
 router
   .use(authenticateJwt)
-  .use(isAdmin);
+  .use(isAdmin); 
 
 router
   .get("/", getUsers)
