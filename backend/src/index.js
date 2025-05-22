@@ -84,3 +84,22 @@ setupAPI()
   .catch((error) =>
     console.log("Error en index.js -> setupAPI(), el error es: ", error),
   );
+/*
+import formatDate from "./helpers/formatDate.js"
+const fecha = new Date()
+console.log(formatDate(fecha))
+console.log(formatDate(fecha.setMonth(fecha.getMonth()+3)))
+const a = formatDate(fecha.setMonth(fecha.getMonth()+3))
+console.log(a)
+
+const b = "14:00"
+const c = "14:50"
+
+const [hora1,min1] = b.split(":").map(Number)
+const [hora2,min2] = c.split(":").map(Number)
+if(hora2<=hora1){
+  console.log("La hora 1 no puede ser mayor a la hora 2")
+  console.log(hora1)
+  console.log(hora2)
+}
+*/
