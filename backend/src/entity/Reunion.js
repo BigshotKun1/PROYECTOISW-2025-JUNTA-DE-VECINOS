@@ -30,14 +30,11 @@ const ReunionSchema = new EntitySchema({
     },
   },
   relations: {
-    directiva: {
-      target: "Directiva",
-      type: "many-to-one",
-      joinColumn: {
-        name: "id_directiva",
-        referencedColumnName: "id_directiva",
-      },
-    },
+    periodo: {
+    target: "DirectivaPeriodo",
+    type: "many-to-one",
+    joinColumn: { name: "id_periodo", referencedColumnName: "id_periodo" },
+  },
     estado: {
       target: "Estado",
       type: "many-to-one",
