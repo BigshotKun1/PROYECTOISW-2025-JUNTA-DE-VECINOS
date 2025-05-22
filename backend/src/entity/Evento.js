@@ -43,14 +43,11 @@ const EventoSchema = new EntitySchema({
         referencedColumnName: "id_usuario",
       },
     },
-    directiva: {
-      target: "Directiva",
-      type: "many-to-one",
-      joinColumn: {
-        name: "id_directiva",
-        referencedColumnName: "id_directiva",
-      },
-    },
+    periodo: {
+    target: "DirectivaPeriodo",
+    type: "many-to-one",
+    joinColumn: { name: "id_periodo", referencedColumnName: "id_periodo" },
+  },
   },
   indices: [
     {

@@ -64,11 +64,6 @@ const UserSchema = new EntitySchema({
       unique: true,
     },
   ], relations: {
-    directivas: {
-      target: "Directiva",
-      type: "one-to-many",
-      inverseSide: "id_usuario",  // corresponde al campo de la relación many-to-one en Directiva
-    },
     votaciones: {
       target: "Votaciones",
       type: "one-to-many",

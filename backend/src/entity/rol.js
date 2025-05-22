@@ -34,11 +34,6 @@ const RolSchema = new EntitySchema({
       type: "one-to-many",
       inverseSide: "rol",
     },
-    directivas: {
-      target: "Directiva",
-      type: "one-to-many",
-      inverseSide: "rol",
-    },
   },
 
   indices: [
