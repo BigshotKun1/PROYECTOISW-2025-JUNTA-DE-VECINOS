@@ -16,11 +16,11 @@ export async function createDirectiva(req, res) {
 
     const { id_usuario, id_rol, fechaInicio, fechaTermino } = req.body;
 
-    const [directiva, error] = await createDirectivaService({ id_usuario, id_rol, fechaInicio, fechaTermino });
+    const [miembro, error] = await createDirectivaService({ id_usuario, id_rol, fechaInicio, fechaTermino });
 
     if (error) return handleErrorClient(res, 400, error);
 
-    return handleSuccess(res, 201, "Directiva creada correctamente", directiva);
+    return handleSuccess(res, 201, "Miembro de directiva creado correctamente", miembro);
   } catch (error) {
     return handleErrorServer(res, 500, error.message);
   }
