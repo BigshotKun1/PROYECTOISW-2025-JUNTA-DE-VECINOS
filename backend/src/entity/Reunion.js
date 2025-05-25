@@ -11,8 +11,8 @@ const ReunionSchema = new EntitySchema({
       generated: true,
     },
     fecha_reunion: {
-      type: "timestamp with time zone",
-      default: () => "CURRENT_TIMESTAMP",
+      type: "date",
+      default: () => "CURRENT_DATE",
       nullable: false,
     },
     lugar_reunion: {
@@ -69,6 +69,10 @@ const ReunionSchema = new EntitySchema({
       columns: ["lugar_reunion"],
     },
   ],
+  uniques: [{
+    name : "unique_fecha_lugar_horaInicio_horaTermino",
+    columns: ["fecha_reunion","hora_inicio","hora_termino","lugar_reunion"]
+  }]
 });
 
 export default ReunionSchema;
