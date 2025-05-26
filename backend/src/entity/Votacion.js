@@ -27,10 +27,6 @@ const VotacionesSchema = new EntitySchema({
       type: "int",
       nullable: false,
     },
-    voto: {
-      type: "int",
-      nullable: false,
-    },
     id_directiva: {
       type: "int",
       nullable: false,
