@@ -2,6 +2,8 @@
 import {
   createEventoService,
   getAllEventosService,
+  deleteEventoService,
+  updateEventoService
 } from "../services/evento.service.js";
 import {
   eventoValidation,
@@ -43,6 +45,44 @@ export async function getAllEventos(req, res) {
     }
 
     handleSuccess(res, 200, "Eventos obtenidos con éxito", eventos);
+  } catch (error) {
+    handleErrorServer(res, 500, error.message);
+  }
+}
+
+export async function deleteEvento(req, res) {
+  try {
+    const { id_evento } = req.params;
+    if (!id_evento) {
+      return handleErrorClient(res, 400, "ID de evento requerido");
+    }
+
+    const [eventoEliminado, errorEvento] = await deleteEventoService({ id_evento });
+    if (errorEvento) {
+      return handleErrorClient(res, 400, "Error al eliminar evento", errorEvento);
+    }
+
+    handleSuccess(res, 200, "Evento eliminado con éxito", eventoEliminado);
+  } catch (error) {
+    handleErrorServer(res, 500, error.message);
+  }
+}
+
+export async function updateEvento(req, res) {
+  try {
+    const { id_evento } = req.params;
+    const { body } = req;
+
+    if (!id_evento) {
+      return handleErrorClient(res, 400, "ID de evento requerido");
+    }
+
+    const [eventoActualizado, errorEvento] = await updateEventoService({ id_evento, ...body });
+    if (errorEvento) {
+      return handleErrorClient(res, 400, "Error al actualizar evento", errorEvento);
+    }
+
+    handleSuccess(res, 200, "Evento actualizado con éxito", eventoActualizado);
   } catch (error) {
     handleErrorServer(res, 500, error.message);
   }

@@ -1,7 +1,55 @@
 "use strict";
 import User from "../entity/user.entity.js";
+import Rol from "../entity/rol.js";
 import { AppDataSource } from "../config/configDb.js";
 import { comparePassword, encryptPassword } from "../helpers/bcrypt.helper.js";
+
+export async function createUserService(body) {
+  try {
+    const { nombreCompleto, rut, email, password } = body;
+
+    const userRepository = AppDataSource.getRepository(User);
+    const rolRepository = AppDataSource.getRepository(Rol);
+
+    // Validar si ya existe un usuario con ese rut o email
+    const existe = await userRepository.findOne({
+      where: [{ rut }, { email }],
+    });
+
+    if (existe) {
+      return [null, "Ya existe un usuario con ese rut o email"];
+    }
+
+    // Buscar el rol 'Vecino'
+    const rolVecino = await rolRepository.findOne({
+      where: { nombreRol: "Vecino" },
+    });
+
+    if (!rolVecino) {
+      return [null, "No se encontró el rol 'Vecino' en la base de datos"];
+    }
+
+    // Encriptar la contraseña
+    const passwordHashed = await encryptPassword(password);
+
+    // Crear el usuario con el rol por defecto
+    const nuevoUsuario = userRepository.create({
+      nombreCompleto,
+      rut,
+      email,
+      password: passwordHashed,
+      rol: rolVecino,
+    });
+
+    const usuarioGuardado = await userRepository.save(nuevoUsuario);
+    const { password: _, ...usuarioSinPassword } = usuarioGuardado;
+
+    return [usuarioSinPassword, null];
+  } catch (error) {
+    console.error("Error al crear usuario:", error);
+    return [null, "Error interno al crear usuario"];
+  }
+}
 
 export async function getUserService(query) {
   try {
