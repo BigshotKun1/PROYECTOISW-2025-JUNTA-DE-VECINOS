@@ -1,7 +1,6 @@
-import { AppDataSource } from "../config/configDb";
-import { voto } from "../entities/voto.js";
-import { votacion } from "../entities/votacion.js";
-import { user } from "../entities/user.js";
+import { AppDataSource } from "../config/configDb.js";
+import Voto  from "../entity/voto.js";
+import User  from "../entity/user.entity.js";
 
 export const emitirVoto = async (req, res) => {
   try {
@@ -18,12 +17,12 @@ export const emitirVoto = async (req, res) => {
       return res.status(404).json({ message: "Votación no encontrada" });
     }
 
-    const yaVoto = await AppDataSource.getRepository(voto).findOne({ where: { id_votacion, id_usuario } });
+    const yaVoto = await AppDataSource.getRepository(Voto).findOne({ where: { id_votacion, id_usuario } });
     if (yaVoto) {
       return res.status(400).json({ message: "El usuario ya ha votado en esta votación" });
     }
 
-    const userRepository = AppDataSource.getRepository(user);
+    const userRepository = AppDataSource.getRepository(User);
     const usuario = await userRepository.findOne({ where: { id_usuario } });
 
     if (!usuario) {
@@ -39,7 +38,7 @@ export const emitirVoto = async (req, res) => {
     nuevoVoto.id_usuario = usuario;
     nuevoVoto.opcion = opcion;
 
-    const votoRepository = AppDataSource.getRepository(voto);
+    const votoRepository = AppDataSource.getRepository(Voto);
     await votoRepository.save(nuevoVoto);
 
     res.status(201).json({
