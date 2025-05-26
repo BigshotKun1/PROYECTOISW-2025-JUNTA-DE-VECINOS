@@ -1,4 +1,6 @@
+"use strict";
 import { AppDataSource } from "../config/configDb.js";
+
 
 export async function createEventoService({ nombreEvento, fechaEvento, lugar_evento, hora_inicio, hora_termino, id_usuario }) {
   try {
