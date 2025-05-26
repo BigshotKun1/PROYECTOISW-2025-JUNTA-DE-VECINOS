@@ -1,52 +1,37 @@
-import { AppDataSource } from "../config/configDb";
-import { Votacion } from "../entities/Votacion.js";
-import { directiva } from "../entities/directiva.js";
-import { user } from "../entities/user.js";
+import { createVotacionService, obtenerVotacionPorId, deleteVotacionService } from "../services/votacion.service.js";
+import {
+  handleErrorClient,
+  handleErrorServer,
+  handleSuccess,
+} from "../handlers/responseHandlers.js";
+import { votacionCreacionValidation } from "../validations/votacion.validation.js";
+import { notifyVecinosVotaciones } from "../services/email.service.js";
 
-export const crearVotacion = async (req, res) => {
+export async function crearVotacion(req, res) {  
   try {
-    const { titulo, descripcion, fechaInicio, fechaFin } = req.body;
+    const { body, user } = req;
+    const { error } = votacionCreacionValidation.validate(body);
+        if (error) {
+          return handleErrorClient(res, 400, "Error de validación", error.message);
+        }
 
-    if (!titulo || !descripcion || !fechaInicio || !fechaFin) {
-      return res.status(400).json({ message: "Todos los campos son obligatorios" });
+    const [nuevaVotacion, errorVotacion] = await createVotacionService({ ...body, id_usuario: user.id_usuario });
+      if (errorVotacion) {
+        return handleErrorClient(res, 400, "Error al crear la votacion", errorVotacion);
+      }
+  
+      handleSuccess(res, 201, "Votacion creada con éxito", nuevaVotacion);
+      await notifyVecinosVotaciones(nuevaVotacion); 
+  
+    } catch (error) {
+      handleErrorServer(res, 500, error.message);
     }
+};
 
-    if (req.user.rol !== "directiva" && req.user.rol !== "admin") {
-      return res.status(403).json({ message: "Acceso denegado. Solo la directiva puede crear votaciones." });
-    }
-
-    const nuevaVotacion = new Votacion();
-    nuevaVotacion.titulo = titulo;
-    nuevaVotacion.descripcion = descripcion;
-    nuevaVotacion.fechaInicio = new Date(fechaInicio);
-    nuevaVotacion.fechaFin = new Date(fechaFin);
-
-
-    const votacionRepository = AppDataSource.getRepository(Votacion);
-    const votacionCreada = await votacionRepository.save(nuevaVotacion);
-
-    res.status(201).json({
-      message: "Votación creada exitosamente",
-      votacion: votacionCreada,
-    });
-  } catch (error) {
-    console.error("Error al crear la votación:", error);
-    res.status(500).json({ message: "Error interno del servidor" });
-  }
-}
-export const obtenerVotacionPorId = async (req, res) => {
+export const obtenerVotacionPorIdController = async (req, res) => {
   try {
     const { id } = req.params;
-
-    const votacionRepository = AppDataSource.getRepository(Votacion);
-    const votacion = await votacionRepository.findOne({
-      where: { id_votacion: id },
-      relations: ["id_usuario", "id_directiva"],
-    });
-
-    if (!votacion) {
-      return res.status(404).json({ message: "Votación no encontrada" });
-    }
+    const votacion = await obtenerVotacionPorId(id);
 
     res.status(200).json({
       message: "Votación obtenida exitosamente",
@@ -54,31 +39,31 @@ export const obtenerVotacionPorId = async (req, res) => {
     });
   } catch (error) {
     console.error("Error al obtener la votación por ID:", error);
-    res.status(500).json({ message: "Error interno del servidor" });
+    res.status(error.status || 500).json({ message: error.message || "Error interno del servidor" });
   }
-}
+};
+
+
+
 export const eliminarVotacion = async (req, res) => {
   try {
-    const { id } = req.params;
+    const { id_votacion } = req.params || {}; // Evita que falle si req.params es undefined
 
-    const votacionRepository = AppDataSource.getRepository(Votacion);
-    const votacion = await votacionRepository.findOne({ where: { id_votacion: id } });
-
-    if (req.user.rol !== "directiva" && req.user.rol !== "admin") {
-      return res.status(403).json({ message: "Acceso denegado. Solo la directiva o administrador puede eliminar votaciones." });
+    if (!id_votacion) {
+      return res.status(400).json({ status: "Client error", message: "ID de votación requerido" });
     }
 
-    if (!votacion) {
-      return res.status(404).json({ message: "Votación no encontrada" });
+    // Aquí llamarías a tu servicio para eliminar la votación
+    const [resultado, error] = await deleteVotacionService(id_votacion);
+
+    if (error) {
+      return res.status(400).json({ status: "Client error", message: error });
     }
 
-    await votacionRepository.remove(votacion);
-
-    res.status(200).json({
-      message: "Votación eliminada exitosamente",
-    });
+    res.status(200).json({ message: "Votación eliminada exitosamente" });
   } catch (error) {
     console.error("Error al eliminar la votación:", error);
     res.status(500).json({ message: "Error interno del servidor" });
   }
-}
+};
+

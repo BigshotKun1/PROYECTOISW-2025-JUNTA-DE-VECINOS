@@ -25,7 +25,7 @@ const VotoSchema = new EntitySchema({
   },
   relations: {
     votacion: {
-      target: "Votacion",
+      target: "Votaciones",
       type: "many-to-one",
       joinColumn: {
         name: "id_votacion",
@@ -42,3 +42,5 @@ const VotoSchema = new EntitySchema({
     },
   },
 });
+
+export default VotoSchema;

@@ -58,7 +58,9 @@ export async function notifyVecinosReuniones(reunion) {
     const vecinos = await userRepository
       .createQueryBuilder("user")
       .innerJoinAndSelect("user.rol", "rol")
-      .where("rol.nombreRol = :rolNombre", { rolNombre: "Vecino" })
+      .where("rol.nombreRol IN (:...roles)", {
+        roles: ["Vecino", "Presidente", "Tesorero", "Secretario"],
+      })
       .select(["user.email", "user.nombreCompleto"])
       .getMany();
 
@@ -101,7 +103,9 @@ export async function notifyVecinosVotaciones(votacion) {
     const vecinos = await userRepository
       .createQueryBuilder("user")
       .innerJoinAndSelect("user.rol", "rol")
-      .where("rol.nombreRol = :rolNombre", { rolNombre: "Vecino" })
+      .where("rol.nombreRol IN (:...roles)", {
+        roles: ["Vecino", "Presidente", "Tesorero", "Secretario"],
+      })
       .select(["user.email", "user.nombreCompleto"])
       .getMany();
 
@@ -110,15 +114,14 @@ export async function notifyVecinosVotaciones(votacion) {
       return;
     }
 
-    const subject = `Nuevo evento: ${votacion.nombreEvento}`;
+    const subject = `Nueva Votacion: ${votacion.motivo_votacion}`;
     const htmlContent = `
-      <h1>Nuevo Evento en la Comunidad</h1>
+      <h1>Nueva Votacion en la Comunidad</h1>
       <p>Estimado vecino,</p>
-      <p>Se ha agendado un nuevo evento: <strong>${votacion.nombreEvento}</strong>.</p>
+      <p>Se ha agendado una nueva Votacion: <strong>${votacion.motivo_votacion}</strong>.</p>
       <p>Detalles:</p>
       <ul>
-        <li><strong>Fecha:</strong> ${votacion.fechaEvento}</li>
-        <li><strong>Lugar:</strong> ${votacion.lugar_evento}</li>
+        <li><strong>Fecha:</strong> ${votacion.fecha_votacion}</li>
         <li><strong>Hora inicio:</strong> ${votacion.hora_inicio}</li>
         <li><strong>Hora término:</strong> ${votacion.hora_termino}</li>
       </ul>
