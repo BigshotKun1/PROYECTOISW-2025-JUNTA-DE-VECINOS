@@ -13,6 +13,7 @@ import {
     handleErrorServer,
     handleSuccess
 } from "../handlers/responseHandlers.js"
+import { notifyVecinosReuniones } from "../services/email.service.js";
 
 export async function createMeeting(req, res){  
     try {
@@ -26,6 +27,7 @@ export async function createMeeting(req, res){
         console.log(errorMeeting)
         if(!meetingSaved) return handleErrorClient(res,400,errorMeeting);
         handleSuccess(res,200,"La reunion fue creada exitosamente",meetingSaved);
+        await notifyVecinosReuniones(meetingSaved); 
     } catch (error) {
         handleErrorServer(res,500,error.message);
     }

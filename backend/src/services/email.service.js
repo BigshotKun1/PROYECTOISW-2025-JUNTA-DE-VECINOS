@@ -67,15 +67,15 @@ export async function notifyVecinosReuniones(reunion) {
       return;
     }
 
-    const subject = `Nuevo evento: ${reunion.nombreEvento}`;
+    const subject = `Nueva Reunion Agendada: ${reunion.fecha_reunion}`;
     const htmlContent = `
-      <h1>Nuevo Evento en la Comunidad</h1>
+      <h1>Nueva Reunion en la Comunidad</h1>
       <p>Estimado vecino,</p>
-      <p>Se ha agendado un nuevo evento: <strong>${reunion.nombreEvento}</strong>.</p>
+      <p>Se ha agendado una nueva Reunion</strong>.</p>
       <p>Detalles:</p>
       <ul>
-        <li><strong>Fecha:</strong> ${reunion.fechaEvento}</li>
-        <li><strong>Lugar:</strong> ${reunion.lugar_evento}</li>
+        <li><strong>Fecha:</strong> ${reunion.fecha_reunion}</li>
+        <li><strong>Lugar:</strong> ${reunion.lugar_reunion}</li>
         <li><strong>Hora inicio:</strong> ${reunion.hora_inicio}</li>
         <li><strong>Hora término:</strong> ${reunion.hora_termino}</li>
       </ul>

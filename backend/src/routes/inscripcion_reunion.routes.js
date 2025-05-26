@@ -7,6 +7,7 @@ import {
     deleteInscripcion,
     getInscripciones
 } from "../controllers/inscripcion_reunion.controller.js";
+import { isDirectiva } from "../middlewares/directiva.middleware.js";
 
 const router = Router();
 
@@ -17,6 +18,7 @@ router
 router 
     .use(authenticateJwt)
     .use(isAdmin)
+    .use(isDirectiva);
 
 router
     .get("/all",getInscripciones);
