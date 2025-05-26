@@ -17,7 +17,7 @@ const ReunionSchema = new EntitySchema({
     },
     lugar_reunion: {
       type: "varchar",
-      length: 255,
+      length:255,
       nullable: false,
     },
     hora_inicio: {

@@ -4,7 +4,7 @@ import userRoutes from "./user.routes.js";
 import authRoutes from "./auth.routes.js";  
 import directivaRoutes from "./directiva.routes.js";
 import eventoRoutes from "./evento.routes.js";
-
+import meetingRoutes from "./meeting.routes.js";
 
 const router = Router();
 
@@ -12,5 +12,7 @@ router
     .use("/auth", authRoutes)
     .use("/user", userRoutes)
     .use("/directiva", directivaRoutes)
-    .use("/eventos", eventoRoutes);
+    .use("/eventos", eventoRoutes)
+    .use("/meetings",meetingRoutes);
+
 export default router;
