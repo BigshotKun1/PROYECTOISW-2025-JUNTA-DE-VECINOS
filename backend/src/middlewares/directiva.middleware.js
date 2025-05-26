@@ -2,24 +2,27 @@ import { AppDataSource } from "../config/configDb.js";
 
 export async function isDirectiva(req, res, next) {
   try {
-    const directivaRepo = AppDataSource.getRepository("Directiva");
-    const userId = req.user.id_usuario; // asegúrate que el token o sesión incluya esto
+    const miembroRepo = AppDataSource.getRepository("DirectivaMiembro");
+    const periodoRepo = AppDataSource.getRepository("DirectivaPeriodo");
+    const userId = req.user.id_usuario;
 
-    // Buscar si el usuario tiene alguna directiva activa
-    const directivaActiva = await directivaRepo
-      .createQueryBuilder("d")
-      .where("d.id_usuario = :userId", { userId })
-      .andWhere("d.FechaInicio <= NOW()")
-      .andWhere("d.FechaTermino >= NOW()")
+    const hoy = new Date().toISOString().split("T")[0]; // formato YYYY-MM-DD
+
+    // Buscar si el usuario pertenece a un periodo vigente
+    const miembroActivo = await miembroRepo
+      .createQueryBuilder("miembro")
+      .innerJoinAndSelect("miembro.periodo", "periodo")
+      .where("miembro.id_usuario = :userId", { userId })
+      .andWhere("periodo.fechaInicio <= :hoy", { hoy })
+      .andWhere("periodo.fechaTermino >= :hoy", { hoy })
       .getOne();
 
-    if (!directivaActiva) {
-      return res.status(403).json({ message: "Acceso denegado: no es miembro de la directiva" });
+    if (!miembroActivo) {
+      return res.status(403).json({ message: "Acceso denegado: no es miembro activo de la directiva" });
     }
 
-    // Puedes pasar la directiva o rol al req para usar en los controladores si quieres
-    req.directiva = directivaActiva;
-
+    // Puedes agregar más lógica si deseas validar roles específicos (presidente, etc.)
+    req.directiva = miembroActivo;
     next();
   } catch (error) {
     return res.status(500).json({ message: error.message });

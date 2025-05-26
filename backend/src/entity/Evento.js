@@ -16,9 +16,9 @@ const EventoSchema = new EntitySchema({
       nullable: false,
     },
     fechaEvento: {
-      type: "timestamp with time zone",
-      default: () => "CURRENT_TIMESTAMP",
+      type: "date",
       nullable: false,
+      default: () => "CURRENT_DATE",
     },
     lugar_evento: {
       type: "varchar",

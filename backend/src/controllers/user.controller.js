@@ -1,5 +1,6 @@
 "use strict";
 import {
+  createUserService,
   deleteUserService,
   getUserService,
   getUsersService,
@@ -14,6 +15,24 @@ import {
   handleErrorServer,
   handleSuccess,
 } from "../handlers/responseHandlers.js";
+
+export async function createUser(req, res) {
+  try {
+    const { body } = req;
+
+    const { error } = userBodyValidation.validate(body);
+
+    if (error) return handleErrorClient(res, 400, error.message);
+
+    const [user, errorUser] = await createUserService(body);
+
+    if (errorUser) return handleErrorClient(res, 400, errorUser);
+
+    handleSuccess(res, 201, "Usuario creado correctamente", user);
+  } catch (error) {
+    handleErrorServer(res, 500, error.message);
+  }
+}
 
 export async function getUser(req, res) {
   try {
