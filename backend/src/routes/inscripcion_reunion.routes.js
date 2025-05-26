@@ -3,25 +3,22 @@ import { Router } from "express";
 import { isAdmin } from "../middlewares/authorization.middleware.js"; /*->  (idPresident, isSecretary, isTreasurer)*/
 import { authenticateJwt } from "../middlewares/authentication.middleware.js";
 import {
-    createMeeting,
-    deleteMeeting,
-    getMeeting,
-    getMeetings,
-    updateMeeting,
-} from "../controllers/meeting.controller.js";
+    createInscripcion,
+    deleteInscripcion,
+    getInscripciones
+} from "../controllers/inscripcion_reunion.controller.js";
 
 const router = Router();
 
 router
-    .get("/all", getMeetings)
+    .post("/", createInscripcion)
+    .delete("/:id",deleteInscripcion);
 
 router 
     .use(authenticateJwt)
     .use(isAdmin)
+
 router
-    .get("/:id", getMeeting)
-    .patch("/:id", updateMeeting)
-    .delete("/:id", deleteMeeting)
-    .post("/", createMeeting);
+    .get("/all",getInscripciones);
 
 export default router;
