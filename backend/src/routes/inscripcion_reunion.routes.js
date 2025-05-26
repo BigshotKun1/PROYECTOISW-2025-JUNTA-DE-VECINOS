@@ -1,26 +1,18 @@
 "use strict";
 import { Router } from "express";
-import { isAdmin } from "../middlewares/authorization.middleware.js"; /*->  (idPresident, isSecretary, isTreasurer)*/
+import { isAdminyDirectiva } from "../middlewares/authorization.middleware.js"; 
 import { authenticateJwt } from "../middlewares/authentication.middleware.js";
 import {
     createInscripcion,
     deleteInscripcion,
     getInscripciones
 } from "../controllers/inscripcion_reunion.controller.js";
-import { isDirectiva } from "../middlewares/directiva.middleware.js";
 
 const router = Router();
 
 router
-    .post("/", createInscripcion)
-    .delete("/:id",deleteInscripcion);
-
-router 
-    .use(authenticateJwt)
-    .use(isAdmin)
-    .use(isDirectiva);
-
-router
-    .get("/all",getInscripciones);
+    .post("/", authenticateJwt, createInscripcion)
+    .delete("/:id", authenticateJwt, deleteInscripcion)
+    .get("/all", authenticateJwt, isAdminyDirectiva, getInscripciones);
 
 export default router;

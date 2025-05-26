@@ -1,7 +1,6 @@
 "use strict";
 import { Router } from "express";
-import { isAdmin } from "../middlewares/authorization.middleware.js"; /*->  (idPresident, isSecretary, isTreasurer)*/
-import { isDirectiva } from "../middlewares/directiva.middleware.js";
+import { isAdminyDirectiva } from "../middlewares/authorization.middleware.js"; 
 import { authenticateJwt } from "../middlewares/authentication.middleware.js";
 import {
     createMeeting,
@@ -18,8 +17,7 @@ router
 
 router 
     .use(authenticateJwt)
-    .use(isDirectiva)
-    .use(isAdmin);
+    .use(isAdminyDirectiva)
 router
     .get("/:id", getMeeting)
     .patch("/:id", updateMeeting)
