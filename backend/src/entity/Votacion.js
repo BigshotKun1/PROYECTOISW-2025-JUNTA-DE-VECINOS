@@ -5,52 +5,57 @@ const VotacionesSchema = new EntitySchema({
   name: "Votaciones",
   tableName: "votaciones",
   columns: {
-    id_votacion: {
-      type: "int",
-      primary: true,
-      generated: true,
-    },
-    hora_inicio: {
-      type: "time",
-      nullable: false,
-    },
-    hora_termino: {
-      type: "time",
-      nullable: false,
-    },
-    motivo_votacion: {
-      type: "varchar",
-      length: 255,
-      nullable: false,
-    },
-    id_usuario: {
-      type: "int",
-      nullable: false,
-    },
-    voto: {
-      type: "int",
-      nullable: false,
-    },
-    id_directiva: {
-      type: "int",
-      nullable: false,
+  id_votacion: {
+    type: "int",
+    primary: true,
+    generated: true,
+  },
+  fecha_votacion: {
+    type: "date",
+    nullable: false,
+  },
+  hora_inicio: {
+    type: "time",
+    nullable: false,
+  },
+  hora_termino: {
+    type: "time",
+    nullable: false,
+  },
+  motivo_votacion: {
+    type: "varchar",
+    length: 255,
+    nullable: false,
+  },
+  id_periodo: {
+    type: "int",
+    nullable: false,
+  },
+},
+relations: {
+  usuario: {
+    target: "User",
+    type: "many-to-one",
+    joinColumn: {
+      name: "id_usuario",
+      referencedColumnName: "id_usuario",
     },
   },
-  relations: {
-    id_usuario: {
-      target: "User",
-      type: "many-to-one",
-      joinColumn: {
-        name: "id_usuario",
-        referencedColumnName: "id_usuario",
-      },
-    },
-    periodo: {
+  periodo: {
     target: "DirectivaPeriodo",
     type: "many-to-one",
-    joinColumn: { name: "id_periodo", referencedColumnName: "id_periodo" },
+    joinColumn: {
+      name: "id_periodo",
+      referencedColumnName: "id_periodo",
+    },
   },
+  votos: {
+    target: "Voto",
+    type: "one-to-many",
+    inverseSide: "votacion",
+    cascade: true,
   },
+},
   indices: [
     {
       name: "IDX_VOTACIONES",

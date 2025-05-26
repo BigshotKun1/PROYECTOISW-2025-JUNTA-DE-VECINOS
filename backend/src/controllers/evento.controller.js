@@ -13,6 +13,7 @@ import {
   handleErrorServer,
   handleSuccess,
 } from "../handlers/responseHandlers.js";
+import { notifyVecinosEvento } from "../services/email.service.js"
 
 // Crear evento (solo directiva)
 export async function createEvento(req, res) {
@@ -23,7 +24,7 @@ export async function createEvento(req, res) {
       return handleErrorClient(res, 400, "Error de validación", error.message);
     }
 
-    const id_usuario = req.user.id_usuario; // asumimos que el token ya fue validado y el usuario inyectado por middleware
+    const id_usuario = req.user.id_usuario; 
 
     const [nuevoEvento, errorEvento] = await createEventoService({ ...body, id_usuario });
     if (errorEvento) {
@@ -31,6 +32,9 @@ export async function createEvento(req, res) {
     }
 
     handleSuccess(res, 201, "Evento creado con éxito", nuevoEvento);
+    await notifyVecinosEvento(nuevoEvento); 
+    
+
   } catch (error) {
     handleErrorServer(res, 500, error.message);
   }
