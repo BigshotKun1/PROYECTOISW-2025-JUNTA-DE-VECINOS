@@ -3,6 +3,7 @@ import { Router } from "express";
 import { isAdmin } from "../middlewares/authorization.middleware.js";
 import { authenticateJwt } from "../middlewares/authentication.middleware.js";
 import {
+  createUser,
   deleteUser,
   getUser,
   getUsers,
@@ -16,6 +17,7 @@ router
   .use(isAdmin); 
 
 router
+  .post("/crear", createUser)
   .get("/", getUsers)
   .get("/detail/", getUser)
   .patch("/detail/", updateUser)
