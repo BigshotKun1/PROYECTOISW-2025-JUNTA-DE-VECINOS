@@ -34,9 +34,9 @@ export async function getInscripciones(req,res){
     try {
         const  [inscripciones, error]  = await getInscripcionesService();    
                 //console.log(meetings)
-                if(!inscripciones) return handleErrorClient(res,400,error)
+        if(!inscripciones) return handleErrorClient(res,400,error)
         
-                handleSuccess(res,200,"Se obtuvieron las inscripciones con exito",inscripciones)
+        handleSuccess(res,200,"Se obtuvieron las inscripciones con exito",inscripciones)
     } catch (error) {
         handleErrorServer(res,500,error.message);
     }
