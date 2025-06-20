@@ -4,35 +4,43 @@ import Asistencia from "../entity/Asistencia_Reunion.js"
 import Estado from "../entity/Estado.js";
 import { AppDataSource } from "../config/configDb.js";
 import { application } from "express";
+import {
+    createAsistenciasService,
+    deleteAsistenciaService,
+} from "../services/asistencia_reunion.service.js";
 
 export async function createInscripcionService(dataInscripcion){
     try {
 
         const inscripcionRepository =  AppDataSource.getRepository(Inscripcion);
-        console.log("data inscripcion(service)",dataInscripcion)
+        //console.log("data inscripcion(service)",dataInscripcion)
         const newInscripcion = inscripcionRepository.create({
             id_usuario: dataInscripcion.id_usuario,
             id_reunion: dataInscripcion.id_reunion
         });
-        console.log("nueva inscripcion",newInscripcion)
+        //console.log("nueva inscripcion",newInscripcion)
 
         const inscripcionSaved = await inscripcionRepository.save(newInscripcion);
-        console.log("inscripcion guardada",inscripcionSaved)
-
+        //console.log("inscripcion guardada",inscripcionSaved)
+        const asistencia = createAsistenciasService(inscripcionSaved.id_inscripcion_reunion);
+        if(!asistencia) return [null,error];
+        
+/*
         const asistenciaRepository = AppDataSource.getRepository(Asistencia);
+
         const estadoRepository = AppDataSource.getRepository(Estado);
         const estado = await estadoRepository
             .createQueryBuilder("e")
-            .where("e.nombreEstado = :ausente",{ ausente: "ausente" })
+            .where("e.nombreEstado = :ausente",{ ausente: "Ausente" })
             .getOne();
 
         const newAsistencia = asistenciaRepository.create({
             id_inscripcion_reunion: inscripcionSaved.id_inscripcion_reunion,
-            id_estado : estado.id_estado
+            estado_asistencia : { id_estado_asistencia : 1 }
         })
 
         await asistenciaRepository.save(newAsistencia);
-
+*/
         return [inscripcionSaved,null];
     
     } catch (error) {
@@ -67,13 +75,15 @@ export async function deleteInscripcionService(id){
         });
         if(!inscripcionFound) return [null, "no se encontro la inscripcion"];
 
+        deleteAsistenciaService(inscripcionFound.id_inscripcion_reunion);
+/*
         const asistenciaRepository = AppDataSource.getRepository(Asistencia);
 
         const asistenciaFound = await asistenciaRepository.findOne({
             where: { id_inscripcion_reunion: inscripcionFound.id_inscripcion_reunion }
         })
 
-        await asistenciaRepository.remove(asistenciaFound);
+        await asistenciaRepository.remove(asistenciaFound);*/
         //console.log(inscripcionFound);
         const inscripcionDeleted =  await inscripcionRepository.remove(inscripcionFound);
 /*

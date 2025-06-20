@@ -14,7 +14,7 @@ const Asistencia_ReunionSchema = new EntitySchema({
       type: "int",
       nullable: false,
     },
-    id_estado: {
+    id_estado_asistencia: {
       type: "int",
       nullable: false,
     },
@@ -28,12 +28,12 @@ const Asistencia_ReunionSchema = new EntitySchema({
         referencedColumnName: "id_inscripcion_reunion",
       },
     },
-    id_estado: {
-      target: "Estado",
+    id_estado_asistencia: {
+      target: "EstadoAsistencia",
       type: "many-to-one",
       joinColumn: {
-        name: "id_estado",
-        referencedColumnName: "id_estado",
+        name: "id_estado_asistencia",
+        referencedColumnName: "id_estado_asistencia",
       },
     },
   },
@@ -50,10 +50,15 @@ const Asistencia_ReunionSchema = new EntitySchema({
     },
     {
       name: "IDX_ASISTENCIA_REUNION_ID_ESTADO",
-      columns: ["id_estado"],
+      columns: ["id_estado_asistencia"],
       unique: false,
     },
   ],
+    uniques: [{
+    name : "unique_id_inscripcion_id_estado",
+    columns: ["id_inscripcion_reunion","id_estado_asistencia"]
+  }]
 });
+
 
 export default Asistencia_ReunionSchema;

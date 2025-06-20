@@ -78,6 +78,11 @@ const UserSchema = new EntitySchema({
       },
       nullable: false,
     },
+    inscripciones: {
+  target: "Inscripcion_Reunion",
+  type: "one-to-many",
+  inverseSide: "id_usuario",  // este es el nombre del campo en Inscripcion_Reunion
+  },
   },
   indices: [
     {

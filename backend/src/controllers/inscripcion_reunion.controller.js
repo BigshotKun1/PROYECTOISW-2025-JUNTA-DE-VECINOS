@@ -15,13 +15,13 @@ export async function createInscripcion(req,res){
     try {
         
                 const newInscripcion = req.body;
-                console.log(newInscripcion)
+                //console.log(newInscripcion)
                 //const { value , error } = estadoBodyValidation.validate(newEstado);
         
                // if(error) handleErrorClient(res,400,error.message);
                 
                 const [ inscripcion , errorInscripcion ] = await createInscripcionService(newInscripcion);
-                console.log(errorInscripcion)
+                //console.log(errorInscripcion)
                 if(errorInscripcion != null) return handleErrorClient(res,400,error.message)
         
                 handleSuccess(res,200,"Inscrito correctamente",inscripcion);

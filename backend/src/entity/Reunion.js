@@ -15,6 +15,11 @@ const ReunionSchema = new EntitySchema({
       default: () => "CURRENT_DATE",
       nullable: false,
     },
+    descripcion_reunion: {
+      type: "varchar",
+      length: 255,
+      nullable: false,
+    },
     lugar_reunion: {
       type: "varchar",
       length:255,
@@ -38,7 +43,7 @@ const ReunionSchema = new EntitySchema({
     estado: {
       target: "Estado",
       type: "many-to-one",
-      inveseSide: "reuniones",
+      inverseSide: "reuniones",
       joinColumn: {
         name: "id_estado",
         referencedColumnName: "id_estado",

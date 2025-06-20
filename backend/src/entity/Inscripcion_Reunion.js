@@ -59,6 +59,10 @@ const Inscripcion_ReunionSchema = new EntitySchema({
       unique: false,
     },
   ],
+    uniques: [{
+    name : "unique_id_reunion_id_estado",
+    columns: ["id_reunion","id_usuario"]
+  }]
 });
 
 export default Inscripcion_ReunionSchema;
