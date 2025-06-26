@@ -71,3 +71,15 @@ export async function obtenerVotacionPorId(id_votacion) {
     throw error;
   }
 }
+
+export async function obtenerTodasLasVotaciones() {
+  try {
+    const votacionRepo = AppDataSource.getRepository(Votaciones);
+    return await votacionRepo.find({
+      relations: ["usuario", "periodo", "votos"], // ajusta según tus relaciones
+      order: { fecha_votacion: "DESC" }
+    });
+  } catch (error) {
+    throw error;
+  }
+}
