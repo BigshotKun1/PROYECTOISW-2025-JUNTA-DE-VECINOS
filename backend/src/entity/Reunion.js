@@ -49,6 +49,15 @@ const ReunionSchema = new EntitySchema({
         referencedColumnName: "id_estado",
       },
     },
+      votaciones: {
+      target: "Votaciones",
+      type: "one-to-many",
+      inverseSide: "reuniones",
+      joinColumn: {
+        name: "id_votacion",
+        referencedColumnName: "id_votacion",
+      },
+    },
     inscripciones: {
       target: "Inscripcion_Reunion",
       type: "one-to-many",
