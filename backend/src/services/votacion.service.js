@@ -1,7 +1,7 @@
 import { AppDataSource } from "../config/configDb.js";
 import Votaciones from "../entity/votacion.js";
 
-export async function createVotacionService({ motivo_votacion, fecha_votacion,  hora_inicio, hora_termino, id_usuario }) {
+export async function createVotacionService({ titulo_votacion, descripcion_votacion, fecha_votacion,  hora_inicio, hora_termino, id_usuario }) {
   try {
     const votacionRepo = AppDataSource.getRepository(Votaciones);
     const miembroRepo = AppDataSource.getRepository("DirectivaMiembro");
@@ -17,7 +17,8 @@ export async function createVotacionService({ motivo_votacion, fecha_votacion,  
     }
 
     const nuevaVotacion = votacionRepo.create({
-      motivo_votacion,
+      titulo_votacion,
+      descripcion_votacion,
       fecha_votacion,
       hora_inicio,
       hora_termino,
