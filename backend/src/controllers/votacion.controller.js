@@ -1,4 +1,4 @@
-import { createVotacionService, obtenerVotacionPorId, deleteVotacionService } from "../services/votacion.service.js";
+import { createVotacionService, obtenerVotacionPorId, deleteVotacionService, obtenerTodasLasVotaciones } from "../services/votacion.service.js";
 import {
   handleErrorClient,
   handleErrorServer,
@@ -43,8 +43,6 @@ export const obtenerVotacionPorIdController = async (req, res) => {
   }
 };
 
-
-
 export const eliminarVotacion = async (req, res) => {
   try {
     const { id_votacion } = req.params || {}; // Evita que falle si req.params es undefined
@@ -67,3 +65,15 @@ export const eliminarVotacion = async (req, res) => {
   }
 };
 
+export const obtenerVotacionesController = async (req, res) => {
+  try {
+    const votaciones = await obtenerTodasLasVotaciones();
+    res.status(200).json({
+      message: "Votaciones obtenidas exitosamente",
+      votaciones,
+    });
+  } catch (error) {
+    console.error("Error al obtener las votaciones:", error);
+    res.status(500).json({ message: "Error interno del servidor" });
+  }
+};
