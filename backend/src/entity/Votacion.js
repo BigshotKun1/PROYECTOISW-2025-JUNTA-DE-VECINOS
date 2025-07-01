@@ -66,13 +66,17 @@ relations: {
     inverseSide: "votacion",
     cascade: true,
   },
-  reuniones: {
-      target: "Reunion",
-      type: "one-to-many",
-      inverseSide: "votacion",
-    },
+  reunion: {
+  target: "Reunion",
+  type: "many-to-one",
+  joinColumn: {
+    name: "id_reunion",
+    referencedColumnName: "id_reunion",
+  },
+  inverseSide: "votaciones"
+  } 
 },
-  indices: [
+indices: [
     {
       name: "IDX_VOTACIONES",
       columns: ["id_votacion"],
