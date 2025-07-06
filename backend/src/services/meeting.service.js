@@ -8,58 +8,74 @@ import { createAsistenciasService } from "./asistencia_reunion.service.js";
 import { AppDataSource } from "../config/configDb.js";
 
 
-export async function createMeetingService(dataMeeting){
+
+export async function createMeetingService(dataMeeting) {
     try {
-        const meetingRepository =  AppDataSource.getRepository(Meeting);
-        const periodoRepository =  AppDataSource.getRepository(Periodo);
-        const asistenciaRepository = AppDataSource.getRepository(Asistencia);
+        const meetingRepository = AppDataSource.getRepository(Meeting);
+        const periodoRepository = AppDataSource.getRepository(Periodo);
+
         const now = new Date();
 
+    // Buscar periodo activo
         const periodo = await periodoRepository
             .createQueryBuilder("p")
-            .where(":now BETWEEN p.fechaInicio AND p.fechaTermino",{ now })
+            .where(":now BETWEEN p.fechaInicio AND p.fechaTermino", { now })
             .getOne();
 
-        const { hora_inicio,hora_termino, fecha_reunion, lugar_reunion, descripcion_reunion } = dataMeeting;
-        
-        const fechaReunion = new Date(dataMeeting.fecha_reunion);
-        if (!onTime(fechaReunion)) {
-            return [null, "La reunión debe agendarse con al menos 12 horas de anticipación."];
+        if (!periodo) {
+            return [null, "No hay un periodo activo para asociar la reunión."];
         }
+
+        const {
+            fecha_reunion,
+            hora_inicio,
+            hora_termino,
+            lugar_reunion,
+            descripcion_reunion,
+        } = dataMeeting;
+
+    // Verificar duplicidad
         const isRepeated = await meetingRepository
             .createQueryBuilder("r")
-            .where(" r.fecha_reunion = :fechaReunion" , { fechaReunion: fecha_reunion })
+            .where("r.fecha_reunion = :fechaReunion", { fechaReunion: fecha_reunion })
             .andWhere("r.hora_inicio = :horaInicio", { horaInicio: hora_inicio })
             .andWhere("r.hora_termino = :horaTermino", { horaTermino: hora_termino })
-            .andWhere("r.lugar_reunion = :lugarReunion", { lugarReunion:lugar_reunion })
-            .andWhere("r.descripcion_reunion = :descripcionReunion",{ descripcionReunion:descripcion_reunion })
+            .andWhere("r.lugar_reunion = :lugarReunion", { lugarReunion: lugar_reunion })
+            .andWhere("r.descripcion_reunion = :descripcionReunion", {
+            descripcionReunion: descripcion_reunion,
+            })
             .getOne();
 
-        if(isRepeated) return [null,"Ya existe una reunion con esas propiedades."]
+        if (isRepeated) {
+            return [null, "Ya existe una reunión con esas propiedades."];
+        }
 
+    // Crear reunión directamente (igual que en eventos)
         const newMeeting = meetingRepository.create({
-            fecha_reunion: dataMeeting.fecha_reunion,
-            lugar_reunion: dataMeeting.lugar_reunion,
-            hora_inicio: dataMeeting.hora_inicio,
-            hora_termino: dataMeeting.hora_termino,
-            descripcion_reunion: dataMeeting.descripcion_reunion,
-            periodo: { id_periodo : periodo.id_periodo },
-            estado: { id_estado : 1 }
+            fecha_reunion,
+            hora_inicio,
+            hora_termino,
+            lugar_reunion,
+            descripcion_reunion,
+            periodo: { id_periodo: periodo.id_periodo },
+            estado: { id_estado: 1 },
         });
 
         const meetingSaved = await meetingRepository.save(newMeeting);
 
-        console.log("id de la reunion recien creada: ",meetingSaved.id_reunion)
+    // Crear asistencias
+        await createAsistenciasService(meetingSaved.id_reunion);
 
-        const listaAsistencia = await createAsistenciasService(meetingSaved.id_reunion);
+        console.log("➡️ Fecha que TypeORM devolvió:", meetingSaved.fecha_reunion);
+        console.log("➡️ Tipo:", typeof meetingSaved.fecha_reunion);
 
-        return [meetingSaved,null];
+        return [meetingSaved, null];
 
     } catch (error) {
-        console.error("Error al crear reunion, el error es:", error);
+        console.error("Error al crear reunión:", error);
+        return [null, error.message];
     }
 }
-
 export async function getMeetingService(id){
     try {
 

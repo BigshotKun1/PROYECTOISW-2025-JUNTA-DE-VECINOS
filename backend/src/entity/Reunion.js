@@ -12,8 +12,8 @@ const ReunionSchema = new EntitySchema({
     },
     fecha_reunion: {
       type: "date",
-      default: () => "CURRENT_DATE",
       nullable: false,
+      default: () => "CURRENT_DATE",
     },
     descripcion_reunion: {
       type: "varchar",

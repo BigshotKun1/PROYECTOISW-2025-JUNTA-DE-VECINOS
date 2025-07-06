@@ -22,21 +22,26 @@ import { application } from "express";
 
 export async function createMeeting(req, res){  
     try {
-        const newMeting = req.body;
-        
-        const { value , error } = meetingBodyValidation.validate(newMeting);
-        
-        if (error) return handleErrorClient(res,400,error.message);
-        //console.log("value controller: ",value)
-        const [ meetingSaved, errorMeeting ] = await createMeetingService(value);
-        //console.log("meetingSaved controller: ",meetingSaved)
-        //console.log(errorMeeting)
-        if(!meetingSaved) return handleErrorClient(res,400,errorMeeting);
-        handleSuccess(res,200,"La reunion fue creada exitosamente",meetingSaved);
-        await notifyVecinosReuniones(meetingSaved); 
-    } catch (error) {
-        handleErrorServer(res,500,error.message);
+    const { body } = req;
+
+    const { error } = meetingBodyValidation.validate(body);
+    if (error) {
+      return handleErrorClient(res, 400, "Error de validación", error.message);
     }
+
+    const [meetingSaved, errorMeeting] = await createMeetingService(body);
+
+    if (errorMeeting) {
+      return handleErrorClient(res, 400, "Error al crear reunión", errorMeeting);
+    }
+
+    // Notificación
+    await notifyVecinosReuniones(meetingSaved);
+
+    return handleSuccess(res, 201, "Reunión creada exitosamente", meetingSaved);
+  } catch (error) {
+    return handleErrorServer(res, 500, error.message);
+  }
 }
 
 export async function getMeeting(req, res){
