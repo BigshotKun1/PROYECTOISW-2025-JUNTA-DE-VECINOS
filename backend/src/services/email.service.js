@@ -1,7 +1,6 @@
 "use strict";
 import { AppDataSource } from "../config/configDb.js"; 
 import User  from "../entity/user.entity.js";       // ruta y nombre real de tu entidad User
-import Inscripcion from "../entity/Inscripcion_Reunion.js";
 import { sendEmail } from "../middlewares/email.middleware.js";
 
 export async function notifyVecinosEvento(evento) {
@@ -141,25 +140,24 @@ export async function notifyVecinosVotaciones(votacion) {
 
 export async function notifyInscritosReuniones(reunionDespues,id) {
   try {
-    
-
     const userRepository = AppDataSource.getRepository(User);
-    const inscritos = await userRepository
-      .createQueryBuilder("u")
-      .innerJoin("u.inscripciones", "i")
-      .where("i.id_reunion = :reunion", { reunion: id })
-      .select(["u.email", "u.nombreCompleto"])
+    
+    const vecinos = await userRepository
+      .createQueryBuilder("user")
+      .innerJoinAndSelect("user.rol", "rol")
+      .where("rol.nombreRol IN (:...roles)", {
+        roles: ["Vecino", "Presidente", "Tesorero", "Secretario"],
+      })
+      .select(["user.email", "user.nombreCompleto"])
       .getMany();
 
-    console.log("Inscritos",inscritos)
-    console.log("Reunion despues",reunionDespues)
-    if (inscritos.length === 0) {
-      console.log("No hay vecinos inscritos en la reunion para notificar.");
+    if (vecinos.length === 0) {
+      console.log("No hay vecinos con ese rol para notificar.");
       return;
     }
     const subject = "Cambio en la reunión programada";
   
-    await Promise.all(inscritos.map(({ email , nombreCompleto }) =>{
+    await Promise.all(vecinos.map(({ email , nombreCompleto }) =>{
       const htmlContent = `
       <p>Estimado vecino,${nombreCompleto}</p>
       <p>Le informamos que la reunion: <strong> ${reunionDespues.descripcion_reunion} </strong></strong> ha sido modificada.</p>
@@ -187,24 +185,23 @@ export async function notifyInscritosReuniones(reunionDespues,id) {
 export async function notifyInscritosDeleteReuniones(reunion,id) {
   try {
     
-    console.log(id)
     const userRepository = AppDataSource.getRepository(User);
-    const inscritos = await userRepository
-      .createQueryBuilder("u")
-      .innerJoin("u.inscripciones", "i")
-      .where("i.id_reunion = :reunion", { reunion: id })
-      .select(["u.email", "u.nombreCompleto"])
+    const vecinos = await userRepository
+      .createQueryBuilder("user")
+      .innerJoinAndSelect("user.rol", "rol")
+      .where("rol.nombreRol IN (:...roles)", {
+        roles: ["Vecino", "Presidente", "Tesorero", "Secretario"],
+      })
+      .select(["user.email", "user.nombreCompleto"])
       .getMany();
 
-    console.log("Inscritos",inscritos)
-    console.log("Reunion despues",reunion)
-    if (inscritos.length === 0) {
-      console.log("No hay vecinos inscritos en la reunion para notificar.");
+    if (vecinos.length === 0) {
+      console.log("No hay vecinos con ese rol para notificar.");
       return;
     }
     const subject = "Reunion eliminada";
   
-    await Promise.all(inscritos.map(({ email , nombreCompleto }) =>{
+    await Promise.all(vecinos.map(({ email , nombreCompleto }) =>{
       const htmlContent = `
       <p>Estimado vecino,${nombreCompleto}</p>
       <p>Le informamos que la reunion: <strong> ${reunion[0].descripcion_reunion} </strong> con fecha ${reunion[0].fecha_reunion} ha sido eliminada.</p>
@@ -221,24 +218,24 @@ export async function notifyInscritosDeleteReuniones(reunion,id) {
 }        
 export async function notifyInscritosSuspensionReuniones(reunion,id) {
   try {
-    console.log(id)
+    
     const userRepository = AppDataSource.getRepository(User);
-    const inscritos = await userRepository
-      .createQueryBuilder("u")
-      .innerJoin("u.inscripciones", "i")
-      .where("i.id_reunion = :reunion", { reunion: id })
-      .select(["u.email", "u.nombreCompleto"])
+    const vecinos = await userRepository
+      .createQueryBuilder("user")
+      .innerJoinAndSelect("user.rol", "rol")
+      .where("rol.nombreRol IN (:...roles)", {
+        roles: ["Vecino", "Presidente", "Tesorero", "Secretario"],
+      })
+      .select(["user.email", "user.nombreCompleto"])
       .getMany();
 
-    console.log("Inscritos",inscritos)
-    console.log("Reunion ",reunion)
-    if (inscritos.length === 0) {
-      console.log("No hay vecinos inscritos en la reunion para notificar.");
+    if (vecinos.length === 0) {
+      console.log("No hay vecinos con ese rol para notificar.");
       return;
     }
     const subject = "Reunion suspendida";
   
-    await Promise.all(inscritos.map(({ email , nombreCompleto }) =>{
+    await Promise.all(vecinos.map(({ email , nombreCompleto }) =>{
       const htmlContent = `
       <p>Estimado vecino,${nombreCompleto}</p>
       <p>Le informamos que la reunion: <strong> ${reunion.descripcion_reunion} </strong> con fecha ${reunion.fecha_reunion} ha sido suspendida.</p>

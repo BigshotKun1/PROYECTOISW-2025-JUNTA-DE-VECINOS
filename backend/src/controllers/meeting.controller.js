@@ -103,7 +103,6 @@ export async function updateMeeting(req, res){
             await notifyInscritosSuspensionReuniones(meetingUpdated,id)
         }
         if(errorMeeting) return handleErrorClient(res,400,errorMeeting);
-        if(meetingUpdated.id_estado)
         await notifyInscritosReuniones(meetingUpdated,id); 
         handleSuccess(res,200,"La reunion fue modificada exitosamente",meetingUpdated);
     } catch (error) {

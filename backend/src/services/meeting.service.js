@@ -1,16 +1,18 @@
 "use strict";
 import Meeting from "../entity/Reunion.js";
-import Inscripciones from "../entity/Inscripcion_Reunion.js"
 import Asistencia from "../entity/Asistencia_Reunion.js"
+import { onTime } from "../helpers/dateMeeting.helper.js";
+
 import Periodo from "../entity/DirectivaPeriodo.js";
+import { createAsistenciasService } from "./asistencia_reunion.service.js";
 import { AppDataSource } from "../config/configDb.js";
-import formatToLocalTime from "../helpers/formatDate.js";
+
 
 export async function createMeetingService(dataMeeting){
     try {
         const meetingRepository =  AppDataSource.getRepository(Meeting);
         const periodoRepository =  AppDataSource.getRepository(Periodo);
-
+        const asistenciaRepository = AppDataSource.getRepository(Asistencia);
         const now = new Date();
 
         const periodo = await periodoRepository
@@ -19,6 +21,11 @@ export async function createMeetingService(dataMeeting){
             .getOne();
 
         const { hora_inicio,hora_termino, fecha_reunion, lugar_reunion, descripcion_reunion } = dataMeeting;
+        
+        const fechaReunion = new Date(dataMeeting.fecha_reunion);
+        if (!onTime(fechaReunion)) {
+            return [null, "La reunión debe agendarse con al menos 12 horas de anticipación."];
+        }
         const isRepeated = await meetingRepository
             .createQueryBuilder("r")
             .where(" r.fecha_reunion = :fechaReunion" , { fechaReunion: fecha_reunion })
@@ -41,6 +48,10 @@ export async function createMeetingService(dataMeeting){
         });
 
         const meetingSaved = await meetingRepository.save(newMeeting);
+
+        console.log("id de la reunion recien creada: ",meetingSaved.id_reunion)
+
+        const listaAsistencia = await createAsistenciasService(meetingSaved.id_reunion);
 
         return [meetingSaved,null];
 
@@ -95,6 +106,10 @@ export async function updateMeetingService(id,dataMeeting){
         if(!meetingFound) return [null, "no se encontro la reunion"];
 
         const { horaInicio, horaTermino, fechaReunion, lugarReunion,descripcion_reunion } = dataMeeting;
+        const fechaReunionAux = new Date(dataMeeting.fecha_reunion);
+        if (!onTime(fechaReunionAux)) {
+            return [null, "La reunión debe editarse con al menos 12 horas de anticipación."];
+        }
         const isRepeated = await meetingRepository
             .createQueryBuilder("r")
             .where(" r.fecha_reunion = :fechaReunion" , { fechaReunion })
@@ -145,29 +160,21 @@ export async function deleteMeetingService(id){
             }
         });
         if(!meetingFound) return [null, "no se encontro la reunion"];
-
-        const inscripcionesRepository = AppDataSource.getRepository(Inscripciones);
-
-        const inscripcionesDeleted = await inscripcionesRepository
-            .createQueryBuilder("i")
-            .where("i.id_reunion = :reunion", { reunion : id })
-            .getMany()    
-        console.log(inscripcionesDeleted)
+        
+        const fechaReunionAux = new Date(meetingFound.fecha_reunion);
+        if (!onTime(fechaReunionAux)) {
+            return [null, "La reunión debe eliminarse con al menos 12 horas de anticipación."];
+        }
 
         const asistenciasRepository = AppDataSource.getRepository(Asistencia);
+        const asistencias = await asistenciasRepository.find({
+            where: { id_reunion: id }
+        });
+        console.log("asistencias",asistencias)
+        if (asistencias.length > 0) {
+            await asistenciasRepository.remove(asistencias);
+        }
         
-        const asistenciasDeleted = await asistenciasRepository
-            .createQueryBuilder("a")
-            .innerJoinAndSelect("a.id_inscripcion_reunion", "i")  
-            .getMany()
-
-        console.log("asistencias borradas:",asistenciasDeleted)
-
-        await asistenciasRepository.remove(asistenciasDeleted);
-
-        await inscripcionesRepository.remove(inscripcionesDeleted);
-
-        //console.log(meetingFound);
         const meetingDeleted =  await meetingRepository.remove(meetingFound);
 
         return [meetingDeleted, null];

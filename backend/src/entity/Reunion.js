@@ -58,15 +58,6 @@ const ReunionSchema = new EntitySchema({
         referencedColumnName: "id_votacion",
       },
     },
-    inscripciones: {
-      target: "Inscripcion_Reunion",
-      type: "one-to-many",
-      inverseSide: "reunion",
-      joinColumn: {
-        name: "id_reunion",
-        referencedColumnName: "id_reunion",
-      },
-    },
   },
   indices: [
     {
