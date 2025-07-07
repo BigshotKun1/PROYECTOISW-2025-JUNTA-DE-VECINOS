@@ -1,5 +1,5 @@
 import { AppDataSource } from "../config/configDb.js";
-import Votaciones from "../entity/votacion.js";
+import Votaciones from "../entity/Votacion.js";
 
 export async function createVotacionService({ titulo_votacion, descripcion_votacion, fecha_votacion,  hora_inicio, hora_termino, id_usuario }) {
   try {
@@ -38,13 +38,13 @@ export async function deleteVotacionService({ id_votacion }) {
     const votacionRepo = AppDataSource.getRepository(Votaciones);
 
     // Buscar el evento por ID
-    const votacion = await eventoRepo.findOne({ where: { id_votacion } });
+    const votacion = await votacionRepo.findOne({ where: { id_votacion } });
 
     if (!votacion) {
-      return [null, "Evento no encontrado"];
+      return [null, "Votacion no encontrada"];
     }
 
-    // Eliminar el evento
+    // Eliminar la votacion
     await votacionRepo.remove(votacion);
     return [votacion, null];
   } catch (error) {
