@@ -35,7 +35,7 @@ const Navbar = () => {
         {/* DERECHA */}
         <div className={`nav-menu ${menuOpen ? 'activado' : ''}`}>
           <ul className="navbar-right">
-            {userRole === 'Administrador' && (
+            {userRole === 'Administrador'  && (
               <>
                 <li>
                     <NavLink to="/home" className="nav-link">

@@ -159,7 +159,7 @@ export async function notifyInscritosReuniones(reunionDespues,id) {
   
     await Promise.all(vecinos.map(({ email , nombreCompleto }) =>{
       const htmlContent = `
-      <p>Estimado vecino,${nombreCompleto}</p>
+      <p>Estimado vecino,${nombreCompleto.toUpperCase()}</p>
       <p>Le informamos que la reunion: <strong> ${reunionDespues.descripcion_reunion} </strong></strong> ha sido modificada.</p>
       <p>Detalles:</p>
       <ul>
@@ -203,7 +203,7 @@ export async function notifyInscritosDeleteReuniones(reunion,id) {
   
     await Promise.all(vecinos.map(({ email , nombreCompleto }) =>{
       const htmlContent = `
-      <p>Estimado vecino,${nombreCompleto}</p>
+      <p>Estimado vecino,${nombreCompleto.toUpperCase()}</p>
       <p>Le informamos que la reunion: <strong> ${reunion[0].descripcion_reunion} </strong> con fecha ${reunion[0].fecha_reunion} ha sido eliminada.</p>
       <p>Saludos,</p>
       <p>La Directiva</p>
@@ -237,7 +237,7 @@ export async function notifyInscritosSuspensionReuniones(reunion,id) {
   
     await Promise.all(vecinos.map(({ email , nombreCompleto }) =>{
       const htmlContent = `
-      <p>Estimado vecino,${nombreCompleto}</p>
+      <p>Estimado vecino,${nombreCompleto.toUpperCase()}</p>
       <p>Le informamos que la reunion: <strong> ${reunion.descripcion_reunion} </strong> con fecha ${reunion.fecha_reunion} ha sido suspendida.</p>
       <p>Saludos,</p>
       <p>La Directiva</p>

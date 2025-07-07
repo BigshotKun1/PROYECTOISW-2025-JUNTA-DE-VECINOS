@@ -82,7 +82,8 @@ export async function getMeetingService(id){
         const meetingRepository = await AppDataSource.getRepository(Meeting);
 
         const meetingFound = await meetingRepository.findOne({
-            where: { id_reunion : id }
+            where: { id_reunion : id },
+            relations: ["estado", "periodo"],
         });
 
         if(!meetingFound) return [null,"No se encontro la reunion."]

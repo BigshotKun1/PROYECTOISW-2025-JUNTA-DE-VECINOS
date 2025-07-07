@@ -48,7 +48,7 @@ export async function getAsistenciasService(id){
         })
 
         if(!meetingFound) return [null,"No se encontro la reunion."];
-
+/*
         const listaAsistencia = await asistenciaRepository
             .createQueryBuilder("a")
             .innerJoinAndSelect("a.id_usuario", "u")          
@@ -61,7 +61,13 @@ export async function getAsistenciasService(id){
                 "e.nombre_estado_asistencia"
             ])
 
-            .getMany();
+            .getMany();*/
+
+            const listaAsistencia = await asistenciaRepository.find({
+  where: { id_reunion: id },  // Solo el id, no un objeto
+  relations: ["id_usuario", "id_estado_asistencia"]
+});
+
         console.log(listaAsistencia.length)
 
         if(!listaAsistencia || listaAsistencia.length==0) return [ null , "No hay asistentes para esta reunión" ];

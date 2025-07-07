@@ -18,7 +18,7 @@ import { notifyInscritosDeleteReuniones,
         notifyInscritosReuniones,
         notifyInscritosSuspensionReuniones,
         notifyVecinosReuniones } from "../services/email.service.js";
-import { application } from "express";
+
 
 export async function createMeeting(req, res){  
     try {
@@ -35,7 +35,6 @@ export async function createMeeting(req, res){
       return handleErrorClient(res, 400, "Error al crear reunión", errorMeeting);
     }
 
-    // Notificación
     await notifyVecinosReuniones(meetingSaved);
 
     return handleSuccess(res, 201, "Reunión creada exitosamente", meetingSaved);
@@ -95,6 +94,7 @@ export async function updateMeeting(req, res){
         
         const newDataMeeting = req.body
         const { value , error } = meetingBodyValidation.validate(newDataMeeting);
+        console.log("❌ Error de validación:", error);
         if (error) return handleErrorClient(res,400,error.message);
         const [ meetingUpdated , errorMeeting ] = await updateMeetingService(id,value);
 
