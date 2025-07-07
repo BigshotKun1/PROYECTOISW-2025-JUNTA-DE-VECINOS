@@ -75,6 +75,7 @@ const Navbar = () => {
     </NavLink>
   </li>
 </ul>
+
         </div>
 
         <div className="hamburger" onClick={toggleMenu}>

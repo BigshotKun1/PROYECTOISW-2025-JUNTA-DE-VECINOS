@@ -47,7 +47,7 @@ const UserProfile = () => {
           </div>
 
           {pdfFile && (
-            <div className="pdf-viewer">
+          <div className="pdf-viewer">
               <embed src={pdfFile} type="application/pdf" width="100%" height="400px" />
             </div>
           )}

@@ -1,37 +1,30 @@
 "use strict";
 import { EntitySchema } from "typeorm";
 
-const Voto = new EntitySchema({
-  name: "Voto",
-  tableName: "votos",
+const OpcionesVotoSchema = new EntitySchema({
+  name: "OpcionesVoto",
+  tableName: "opciones_voto",
   columns: {
-    id_voto: {
+    id_opcion_voto: {
       type: "int",
       primary: true,
       generated: true,
+    },
+    id_votacion: {
+      type: "int",
+      nullable: false,
     },
     id_usuario: {
       type: "int",
       nullable: false,
     },
-    id_opcion_voto: {
-      type: "int",
+    Texto_opcion: {
+      type: "varchar",
+      length: 255,
       nullable: false,
-    },
-    fecha: {
-      type: "timestamp",
-      default: () => "CURRENT_TIMESTAMP",
     },
   },
   relations: {
-    opcionVoto: {
-      target: "OpcionesVoto",
-      type: "many-to-one",
-      joinColumn: {
-        name: "id_opcion_voto",
-        referencedColumnName: "id_opcion_voto",
-      },
-    },
     votacion: {
       target: "Votaciones",
       type: "many-to-one",
@@ -40,7 +33,15 @@ const Voto = new EntitySchema({
         referencedColumnName: "id_votacion",
       },
     },
+    usuario: {
+      target: "User",
+      type: "many-to-one",
+      joinColumn: {
+        name: "id_usuario",
+        referencedColumnName: "id_usuario",
+      },
+    },
   },
 });
 
-export default Voto;
+export default OpcionesVotoSchema;

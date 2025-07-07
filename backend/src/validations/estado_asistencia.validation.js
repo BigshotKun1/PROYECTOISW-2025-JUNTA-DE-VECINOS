@@ -2,7 +2,7 @@
 import  Joi from "joi"
 
 export const estadoAsistenciaBodyValidation  = Joi.object({
-    nombre_estado:Joi.string()
+    nombre_estado_asistencia:Joi.string()
         .min(5)
         .max(20)
         .required()

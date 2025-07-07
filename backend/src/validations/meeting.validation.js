@@ -1,45 +1,17 @@
 "use strict"
 import Joi from "joi";
 
+const today = new Date();
+today.setHours(0, 0, 0, 0);
 const maxDate = new Date()
 maxDate.setMonth(maxDate.getMonth()+6)
-/*
-const compareHours = (value,helper)=>{
-    const [h1,m1] = value.hora_inicio.split(":").map(Number);
-    const [h2,m2] = value.hora_termino.split(":").map(Number);
-
-    const inicio = h1 + m1;
-    const termino = h2 + m2;
-
-    if(termino <= inicio ){
-        return helper.message(
-            "La hora termino de la reunion tiene que ser distinta y mayor a la hora de inicio. "
-        )
-    }
-    return value;
-}
-const hourValidator = (value,helper)=>{
-    const [h1,m1] = value.hora_inicio.split(":").map(Number);
-    const [h2,m2] = value.hora_termino.split(":").map(Number);
-    if(h1 < 11 || h1 < 11 ){
-        if(h1.toString() !== "08" || h1.toString() !== "09"||h1.toString() !== "10" 
-        || h2.toString() !== "08" || h2.toString() !== "09"||h2.toString() !== "10"){
-            return helper.message(
-                "No puedes agendar horas antes de las 08:00 AM. "
-            ) 
-        }
-    }
-
-    return value;
-}
-    */
 export const meetingBodyValidation = Joi.object({
     fecha_reunion: Joi.date()
-        .greater("now")
+        .min(today)
         .less(maxDate)
         .required()
         .messages({
-            "date.greater":"La fecha tiene que ser futura. ",
+            "date.min": "La fecha debe ser igual o posterior al día de hoy.",
             "date.less":"La fecha no puede ser superior a 6 meses. ",
             "any.required":"La fecha es obligatoria. ",
         }),
@@ -77,9 +49,18 @@ export const meetingBodyValidation = Joi.object({
             "number.integer": "El id del estado debe ser un número entero.",
             "number.positive": "El id del estado debe ser un número positivo.",
     }),
-        
+    descripcion_reunion: Joi.string()
+        .required()
+        .max(255)
+        .min(10)
+        .messages({
+            "any.required":"La descripcion de la reunion es obligatoria.",
+            "string.max":"La descripcion de la reunion no puede superar los 255 caracteres",
+            "string.min":"La descripcion de la reunion tiene que tener como minimo 10 caracteres",
+            "string.base":"La descripcion de la reunion debe ser de tipo string"
+        })
 }).custom((value, helpers) => {
-    // Validación cruzada
+    // Validamos que la hora de termino sea despúes de la hora de inicio
     const [h1, m1] = value.hora_inicio.split(":").map(Number);
     const [h2, m2] = value.hora_termino.split(":").map(Number);
 
@@ -97,19 +78,15 @@ export const meetingBodyValidation = Joi.object({
     return value;
 }, "Validación cruzada de horas");
 
-//.custom((compareHours, "Validacion para que las horas no estén cruzadas"))
-//.custom((hourValidator, "Validacion para que las horas no sean antes de las 08:00 am"))
-/*
-export const meetingQueryValidation = Joi.object({
-    id_reunion: Joi.number()
-    .integer()
-    .positive()
-    .required()
-    .messages({
-        "number.base": "El id debe ser un número.",
-        "number.integer": "El id debe ser un número entero.",
-        "number.positive": "El id debe ser un número positivo.",
-        "any.required": "El id es obligatorio para buscar una reunion.",
-    }),
-})
-*/
+export const meetingParamsValidation = Joi.object({
+    id: Joi.number()
+        .integer()
+        .positive()
+        .required()
+        .messages({
+            "number.base": "El id debe ser un número.",
+            "number.integer": "El id debe ser un número entero.",
+            "number.positive": "El id debe ser un número positivo.",
+    })
+}).unknown(false)
+
