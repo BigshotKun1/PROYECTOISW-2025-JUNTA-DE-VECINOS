@@ -1,5 +1,5 @@
 import { AppDataSource } from "../config/configDb.js";
-import Voto from "../entity/Voto.js";
+import Voto from "../entity/voto.js";
 
 const votoRepo = AppDataSource.getRepository(Voto);
 
