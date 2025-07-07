@@ -11,7 +11,6 @@ import ProtectedRoute from '@components/ProtectedRoute';
 import '@styles/styles.css';
 import UserProfile from './pages/Perfil';
 import { AuthProvider } from './context/AuthContext';
-import CalendarioEventos from './components/Calendario';
 import Eventos from './pages/Eventos';
 
 const router = createBrowserRouter([
