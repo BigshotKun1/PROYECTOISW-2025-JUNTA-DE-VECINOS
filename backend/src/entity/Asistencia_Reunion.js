@@ -9,32 +9,36 @@ const Asistencia_ReunionSchema = new EntitySchema({
       type: "int",
       primary: true,
       generated: true,
-    },
-    id_inscripcion_reunion: {
-      type: "int",
-      nullable: false,
-    },
-    id_estado: {
-      type: "int",
-      nullable: false,
-    },
+    }
   },
   relations: {
-    id_inscripcion_reunion: {
-      target: "Inscripcion_Reunion",
+    id_usuario: {
+      target: "User",
       type: "many-to-one",
+      inverseSide: "asistencias", 
       joinColumn: {
-        name: "id_inscripcion_reunion",
-        referencedColumnName: "id_inscripcion_reunion",
+        name: "id_usuario",
+        referencedColumnName: "id_usuario",
       },
+      nullable: false
     },
-    id_estado: {
-      target: "Estado",
+    id_reunion: {
+      target: "Reunion",
       type: "many-to-one",
       joinColumn: {
-        name: "id_estado",
-        referencedColumnName: "id_estado",
+        name: "id_reunion",
+        referencedColumnName: "id_reunion",
       },
+      nullable: false
+    },
+    id_estado_asistencia: {
+      target: "EstadoAsistencia",
+      type: "many-to-one",
+      joinColumn: {
+        name: "id_estado_asistencia",
+        referencedColumnName: "id_estado_asistencia",
+      },
+      nullable: false
     },
   },
   indices: [
@@ -44,16 +48,17 @@ const Asistencia_ReunionSchema = new EntitySchema({
       unique: true,
     },
     {
-      name: "IDX_ASISTENCIA_REUNION_ID_INSCRIPCION_REUNION",
-      columns: ["id_inscripcion_reunion"],
-      unique: false,
-    },
-    {
       name: "IDX_ASISTENCIA_REUNION_ID_ESTADO",
-      columns: ["id_estado"],
+      columns: ["id_estado_asistencia"],
       unique: false,
     },
   ],
+  uniques: [
+    {
+      name: "unique_id_reunion_id_usuario",
+      columns: ["id_reunion", "id_usuario"]
+    }
+  ]
 });
 
 export default Asistencia_ReunionSchema;

@@ -12,7 +12,12 @@ const ReunionSchema = new EntitySchema({
     },
     fecha_reunion: {
       type: "date",
+      nullable: false,
       default: () => "CURRENT_DATE",
+    },
+    descripcion_reunion: {
+      type: "varchar",
+      length: 255,
       nullable: false,
     },
     lugar_reunion: {
@@ -38,19 +43,19 @@ const ReunionSchema = new EntitySchema({
     estado: {
       target: "Estado",
       type: "many-to-one",
-      inveseSide: "reuniones",
+      inverseSide: "reuniones",
       joinColumn: {
         name: "id_estado",
         referencedColumnName: "id_estado",
       },
     },
-    inscripciones: {
-      target: "Inscripcion_Reunion",
+      votaciones: {
+      target: "Votaciones",
       type: "one-to-many",
-      inverseSide: "reunion",
+      inverseSide: "reuniones",
       joinColumn: {
-        name: "id_reunion",
-        referencedColumnName: "id_reunion",
+        name: "id_votacion",
+        referencedColumnName: "id_votacion",
       },
     },
   },
