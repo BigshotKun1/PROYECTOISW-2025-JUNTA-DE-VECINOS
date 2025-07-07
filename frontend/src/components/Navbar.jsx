@@ -35,44 +35,46 @@ const Navbar = () => {
         {/* DERECHA */}
         <div className={`nav-menu ${menuOpen ? 'activado' : ''}`}>
           <ul className="navbar-right">
-            {userRole === 'Administrador' || userRole === 'Tesorero' &&  (
-              <>
-                <li>
-                    <NavLink to="/home" className="nav-link">
-            <FaHome style={{  fontSize: '24px', marginRight: '8px' }} />
-          </NavLink>
-                  <NavLink to="/users">
-                    <FaUsers style={{ marginRight: '5px' }} />
-                    Usuarios
-                  </NavLink>
-                </li>
-                <li>
-                  <NavLink to="/eventos">
-                    <FaCalendarAlt style={{ marginRight: '5px' }} />
-                    Eventos
-                  </NavLink>
-                </li>
-                <li>
-                  <NavLink to="/reuniones">
-                    <FaClipboardList style={{ marginRight: '5px' }} />
-                    Reuniones
-                  </NavLink>
-                </li>
-                <li>
-                  <NavLink to="/votaciones">
-                    <FaVoteYea style={{ marginRight: '5px' }} />
-                    Votaciones
-                  </NavLink>
-                </li>
-              </>
-            )}
-            <li>
-              <NavLink to="/auth" onClick={logoutSubmit}>
-                <FaSignOutAlt style={{ marginRight: '5px' }} />
-                Cerrar sesión
-              </NavLink>
-            </li>
-          </ul>
+  {['Administrador', 'Tesorero', 'Presidente', 'Secretario'].includes(userRole) && (
+    <>
+      <li>
+        <NavLink to="/home" className="nav-link">
+          <FaHome style={{ fontSize: '24px', marginRight: '8px' }} />
+        </NavLink>
+      </li>
+      <li>
+        <NavLink to="/users">
+          <FaUsers style={{ marginRight: '5px' }} />
+          Usuarios
+        </NavLink>
+      </li>
+      <li>
+        <NavLink to="/eventos">
+          <FaCalendarAlt style={{ marginRight: '5px' }} />
+          Eventos
+        </NavLink>
+      </li>
+      <li>
+        <NavLink to="/reuniones">
+          <FaClipboardList style={{ marginRight: '5px' }} />
+          Reuniones
+        </NavLink>
+      </li>
+      <li>
+        <NavLink to="/votaciones">
+          <FaVoteYea style={{ marginRight: '5px' }} />
+          Votaciones
+        </NavLink>
+      </li>
+    </>
+  )}
+  <li>
+    <NavLink to="/auth" onClick={logoutSubmit}>
+      <FaSignOutAlt style={{ marginRight: '5px' }} />
+      Cerrar sesión
+    </NavLink>
+  </li>
+</ul>
         </div>
 
         <div className="hamburger" onClick={toggleMenu}>
