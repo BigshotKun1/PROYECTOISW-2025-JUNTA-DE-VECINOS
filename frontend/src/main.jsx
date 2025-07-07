@@ -39,7 +39,6 @@ const router = createBrowserRouter([
       },
       {
         path: '/eventos',
-        element: <Eventos />
 
         element:
           <ProtectedRoute allowedRoles={['Administrador','Presidente', 'Secretario','Tesorero']}>

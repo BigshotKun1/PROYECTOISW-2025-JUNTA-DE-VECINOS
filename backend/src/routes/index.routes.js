@@ -25,7 +25,7 @@ router
     .use("/asistencias",asistenciasRoutes)
     .use("/votaciones", votacionRoutes)
     .use("/votos", votoRoutes)
-    .use("/opciones", opcionesRoutes);
+    .use("/opciones", opcionesRoutes)
     .use("/estadosA",estadoARoutes);
 
 export default router;
