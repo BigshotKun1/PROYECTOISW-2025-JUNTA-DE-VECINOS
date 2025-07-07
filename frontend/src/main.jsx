@@ -13,6 +13,7 @@ import UserProfile from './pages/Perfil';
 import { AuthProvider } from './context/AuthContext';
 import CalendarioEventos from './components/Calendario';
 import Eventos from './pages/Eventos';
+import Votaciones from '@pages/Votaciones.jsx';
 
 const router = createBrowserRouter([
   {
@@ -43,7 +44,11 @@ const router = createBrowserRouter([
             <UserProfile />
           </ProtectedRoute>
                 )
-  },
+      },
+      {
+        path: '/votaciones',
+        element: <Votaciones />
+      },
     ]
   },
   {
