@@ -193,6 +193,7 @@
 }
 .swal2-popup {
   z-index: 20001 !important;
+
 }
 
 @keyframes fadeIn {

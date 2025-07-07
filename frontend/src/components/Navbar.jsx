@@ -77,7 +77,6 @@ const Navbar = () => {
 </ul>
 
         </div>
-
         <div className="hamburger" onClick={toggleMenu}>
           <span className="bar"></span>
           <span className="bar"></span>

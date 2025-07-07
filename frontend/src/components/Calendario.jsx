@@ -6,11 +6,14 @@ import { getAllEventos, createEvento, deleteEvento } from "@services/eventos.ser
 import "@styles/calendario.css";
 import Swal from 'sweetalert2';
 
+
 const CalendarioEventos = () => {
   const [eventos, setEventos] = useState([]);
   const [modalAbierto, setModalAbierto] = useState(false);
   const [fechaSeleccionada, setFechaSeleccionada] = useState("");
+
   const [eventoSeleccionado, setEventoSeleccionado] = useState(null);
+
   const [nuevoEvento, setNuevoEvento] = useState({
     nombreEvento: "",
     hora_inicio: "",
@@ -18,13 +21,21 @@ const CalendarioEventos = () => {
     lugar_evento: ""
   });
 
+
+
   const [modoEliminar, setModoEliminar] = useState(false);
+
 
   useEffect(() => {
     const fetchEventos = async () => {
       const eventosRaw = await getAllEventos();
 
       const eventosFormateados = eventosRaw.map(evento => {
+
+        const start = `${evento.fechaEvento}T${evento.hora_inicio.slice(0,5)}`;
+        const end = `${evento.fechaEvento}T${evento.hora_termino.slice(0,5)}`;
+        return {
+
         const start = `${evento.fechaEvento}T${evento.hora_inicio.slice(0, 5)}`;
         const end = `${evento.fechaEvento}T${evento.hora_termino.slice(0, 5)}`;
         return {
@@ -47,7 +58,11 @@ const CalendarioEventos = () => {
   }, []);
 
   const handleDateClick = (info) => {
+
+    setFechaSeleccionada(info.dateStr); // formato YYYY-MM-DD
+
     setFechaSeleccionada(info.dateStr);
+
     setModalAbierto(true);
   };
 
@@ -57,6 +72,7 @@ const CalendarioEventos = () => {
   };
 
   const handleGuardarEvento = async () => {
+
     if (nuevoEvento.hora_termino <= nuevoEvento.hora_inicio) {
     return Swal.fire({
       icon: 'warning',
@@ -64,6 +80,7 @@ const CalendarioEventos = () => {
       text: 'La hora de término no puede ser menor o igual a la de inicio.'
     });
   }
+
     const eventoAEnviar = {
       ...nuevoEvento,
       fechaEvento: fechaSeleccionada,
@@ -73,6 +90,9 @@ const CalendarioEventos = () => {
     const [guardado, error] = await createEvento(eventoAEnviar);
 
     if (guardado) {
+
+      alert("✅ Evento creado correctamente");
+
      Swal.fire({
     icon: 'success',
     title: 'Evento creado',
@@ -80,6 +100,7 @@ const CalendarioEventos = () => {
     timer: 2000,
     showConfirmButton: false
   });
+
       setModalAbierto(false);
       setNuevoEvento({
         nombreEvento: "",
@@ -87,6 +108,14 @@ const CalendarioEventos = () => {
         hora_termino: "",
         lugar_evento: ""
       });
+
+      // recargar eventos
+      const actualizados = await getAllEventos();
+      const eventosFormateados = actualizados.map(evento => ({
+        title: evento.nombreEvento,
+        start: `${evento.fechaEvento}T${evento.hora_inicio.slice(0,5)}`,
+        end: `${evento.fechaEvento}T${evento.hora_termino.slice(0,5)}`,
+
       // Recargar eventos
       const actualizados = await getAllEventos();
       const eventosFormateados = actualizados.map(evento => ({
@@ -102,6 +131,58 @@ const CalendarioEventos = () => {
       }));
       setEventos(eventosFormateados);
     } else {
+
+      alert("❌ Error al crear evento: " + error);
+    }
+  };
+
+  return (
+    <div className="contenedor-calendario">
+      <h2 style={{ textAlign: "center", marginBottom: "20px" }}>📅 Calendario de Eventos Vecinales</h2>
+      <FullCalendar
+        plugins={[dayGridPlugin, interactionPlugin]}
+        initialView="dayGridMonth"
+        locale="es"
+        events={eventos}
+        height="auto"
+        dateClick={handleDateClick}
+      />
+
+      {modalAbierto && (
+        <div className="modal-overlay">
+          <div className="modal-content">
+            <h3>Nuevo evento para el {fechaSeleccionada}</h3>
+            <input
+              type="text"
+              name="nombreEvento"
+              placeholder="Nombre del evento"
+              value={nuevoEvento.nombreEvento}
+              onChange={handleInputChange}
+            />
+            <input
+              type="text"
+              name="lugar_evento"
+              placeholder="Lugar del evento"
+              value={nuevoEvento.lugar_evento}
+              onChange={handleInputChange}
+            />
+            <input
+              type="time"
+              name="hora_inicio"
+              value={nuevoEvento.hora_inicio}
+              onChange={handleInputChange}
+            />
+            <input
+              type="time"
+              name="hora_termino"
+              value={nuevoEvento.hora_termino}
+              onChange={handleInputChange}
+            />
+
+            <button onClick={handleGuardarEvento}>Guardar</button>
+            <button onClick={() => setModalAbierto(false)}>Cancelar</button>
+          </div>
+
        Swal.fire({
     icon: 'error',
     title: 'Error',

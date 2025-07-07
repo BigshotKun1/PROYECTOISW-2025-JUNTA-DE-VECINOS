@@ -5,7 +5,6 @@ import '@styles/Eventos.css';
 
 const Eventos = () => {
   const [eventos, setEventos] = useState([]);
-
   useEffect(() => {
     const fetchEventos = async () => {
       try {
@@ -75,6 +74,7 @@ const Eventos = () => {
             <p key={ev.id_evento}>
               📍 {ev.nombreEvento} ➡️ {new Date(ev.fechaEvento).toLocaleDateString('es-CL')}
             </p>
+
           ))
         ) : (
           <p>No hay eventos en los próximos días</p>

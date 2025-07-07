@@ -9,7 +9,9 @@ import estadoRoutes from "./estado.routes.js";
 import asistenciasRoutes from "../routes/asistencia_reunion.routes.js"
 import votacionRoutes from "./votacion.routes.js";
 import votoRoutes from "./voto.routes.js";
+import opcionesRoutes from "./opciones.routes.js";
 import estadoARoutes from "./estado_asistencia.routes.js";
+
 
 const router = Router();
 
@@ -23,7 +25,7 @@ router
     .use("/asistencias",asistenciasRoutes)
     .use("/votaciones", votacionRoutes)
     .use("/votos", votoRoutes)
+    .use("/opciones", opcionesRoutes);
     .use("/estadosA",estadoARoutes);
-
 
 export default router;

@@ -27,6 +27,7 @@ export async function createEvento(evento) {
     console.error('Error al crear evento:', error);
     return [null, error];
   }
+
 }
 
 export async function deleteEvento(idEvento) {
@@ -37,4 +38,5 @@ export async function deleteEvento(idEvento) {
     console.error('Error al eliminar evento:', error);
     return [null, error];
   }
+
 }
