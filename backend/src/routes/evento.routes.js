@@ -6,7 +6,7 @@ const router = express.Router();
 
 
 router.post("/crear", authenticateJwt, isDirectiva, createEvento);
-router.get("/", getAllEventos);
+router.get("/", authenticateJwt, getAllEventos);
 router.delete("/:id_evento", authenticateJwt, isDirectiva, deleteEvento);
 router.patch("/:id_evento", authenticateJwt, isDirectiva, updateEvento);
 

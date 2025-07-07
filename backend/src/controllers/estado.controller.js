@@ -1,20 +1,20 @@
 "use strict"
-import Status from "../entity/Estado.js"
 import {  handleErrorClient,handleErrorServer, handleSuccess } from "../handlers/responseHandlers.js";
 import { 
     createEstadoService,
     deleteEstadoService,
     getEstadoService
 } from "../services/estado.service.js"
+import { estadoAsistenciaParamsValidation } from "../validations/estado.validation.js";
 
 export async function createEstado(req,res){
     try {
 
         const newEstado = req.body;
         
-        //const { value , error } = estadoBodyValidation.validate(newEstado);
+        const { error } = estadoBodyValidation.validate(newEstado);
 
-       // if(error) handleErrorClient(res,400,error.message);
+        if(error) handleErrorClient(res,400,error.message);
         
         const [ estado , errorEstado ] = await createEstadoService(newEstado);
         console.log(errorEstado)
@@ -29,8 +29,8 @@ export async function createEstado(req,res){
 export async function getEstado(req,res){
     try {
         const  [estados, error]  = await getEstadoService();    
-        //console.log(meetings)
-        if(error!=null) return handleErrorClient(res,400,error)
+        
+        if(error!=null) return handleErrorClient(res,400,error.message)
 
         handleSuccess(res,200,"Se obtuvieron los estados con exito",estados)
     
@@ -42,7 +42,8 @@ export async function deleteEstado(req,res){
     try {
 
         const id = req.params.id;
-        
+        const { error: idError } =estadoParamsValidation.validate({ id })
+        if(idError) return handleErrorClient(res,400,idError.message)
         const [ estadoDelete, error ] = await deleteEstadoService(id);
         if(error) return handleErrorClient(res, 404, "Error eliminando la reunion", error);
         

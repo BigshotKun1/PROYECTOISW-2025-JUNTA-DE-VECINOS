@@ -22,10 +22,15 @@ const VotacionesSchema = new EntitySchema({
     type: "time",
     nullable: false,
   },
-  motivo_votacion: {
+  titulo_votacion: {
     type: "varchar",
     length: 255,
     nullable: false,
+  },
+  descripcion_votacion: {
+    type: "varchar",
+    length: 1024,
+    nullable: true,
   },
   id_periodo: {
     type: "int",
@@ -49,12 +54,23 @@ relations: {
       referencedColumnName: "id_periodo",
     },
   },
+  opciones: {
+  target: "OpcionesVoto",
+  type: "one-to-many",
+  inverseSide: "votacion",
+  cascade: true,
+},
   votos: {
     target: "Voto",
     type: "one-to-many",
     inverseSide: "votacion",
     cascade: true,
   },
+  reuniones: {
+      target: "Reunion",
+      type: "one-to-many",
+      inverseSide: "votacion",
+    },
 },
   indices: [
     {
