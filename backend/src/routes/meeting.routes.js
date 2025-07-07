@@ -13,7 +13,7 @@ import {
 const router = Router();
 
 router
-    .get("/all", getMeetings)
+    .get("/all",authenticateJwt,getMeetings)
 
 router 
     .use(authenticateJwt)

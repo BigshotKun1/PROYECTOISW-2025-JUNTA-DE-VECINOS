@@ -66,6 +66,11 @@ relations: {
     inverseSide: "votacion",
     cascade: true,
   },
+  reuniones: {
+      target: "Reunion",
+      type: "one-to-many",
+      inverseSide: "votacion",
+    },
 },
   indices: [
     {

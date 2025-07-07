@@ -1,6 +1,8 @@
 "use strict";
 import User from "../entity/user.entity.js";
 import Rol from "../entity/rol.js";
+import Estado from "../entity/Estado.js"
+import EstadoAsistencia from "../entity/EstadoAsistencia.js"
 
 import { AppDataSource } from "./configDb.js";
 import { encryptPassword } from "../helpers/bcrypt.helper.js";
@@ -104,4 +106,56 @@ async function crearRoles() {
     console.error("Error al crear roles:", error);
   }
 }
-export { crearRoles, createUsers }; 
+
+
+async function createEstado(){
+  try {
+    const estadoRepository = AppDataSource.getRepository(Estado);
+
+    const count = await estadoRepository.count();
+    if (count > 0) return;
+    await Promise.all([
+      estadoRepository.save(
+        estadoRepository.create({
+          nombreEstado: "Pendiente"
+        }),
+      ),
+      estadoRepository.save(
+        estadoRepository.create({
+          nombreEstado: "Realizada"
+        }),
+      ),
+      estadoRepository.save(
+        estadoRepository.create({
+          nombreEstado: "Suspendida"
+        }),
+      ),
+    ])
+  } catch (error) {
+    console.error("Error al crear estados:",error);
+  }
+}
+
+async function createEstadoAsistencia(){
+  try {
+    const estadoAsistenciaRepository = AppDataSource.getRepository(EstadoAsistencia);
+
+    const count = await estadoAsistenciaRepository.count();
+    if (count > 0) return;
+    await Promise.all([
+      estadoAsistenciaRepository.save(
+        estadoAsistenciaRepository.create({
+          nombre_estado_asistencia: "Ausente"
+        }),
+      ),
+      estadoAsistenciaRepository.save(
+        estadoAsistenciaRepository.create({
+          nombre_estado_asistencia: "Presente"
+        }),
+      ),
+    ])
+  } catch (error) {
+    console.error("Error al crear estados de asistencia:",error);
+  }
+}
+export { crearRoles, createUsers, createEstado, createEstadoAsistencia }; 

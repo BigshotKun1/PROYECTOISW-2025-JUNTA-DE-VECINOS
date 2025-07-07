@@ -78,6 +78,122 @@
   display: flex;
   flex-direction: column;
   gap: 10px;
+
+}
+
+.btn-eliminar {
+  padding: 8px 6px;
+  background-color: transparent;
+  border: 2px solid #cc0000;
+  color: #cc0000;
+  font-weight: bold;
+  border-radius: 6px;
+  transition: 0.3s ease;
+  cursor: pointer;
+}
+
+.btn-eliminar:hover {
+  background-color: #cc0000;
+  color: white;
+}
+
+.btn-eliminar.activo {
+  background-color: #cc0000;
+  color: white;
+}
+
+.fc-eliminarEvento-button {
+  background-color: transparent;
+  border: 2px solid #cc0000;
+  color: #cc0000;
+  font-weight: bold;
+  border-radius: 5px;
+  margin-left: 10px;
+  transition: 0.3s ease;
+}
+
+.fc-eliminarEvento-button:hover {
+  background-color: #cc0000;
+  color: white;
+}
+
+.fc-eliminarEvento-button.fc-button-active {
+  background-color: #cc0000;
+  color: white;
+}
+
+.modal-crear-evento {
+  background-color: #ffffff;
+  padding: 25px;
+  border-radius: 12px;
+  max-width: 420px;
+  width: 90%;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.15);
+  display: flex;
+  flex-direction: column;
+}
+
+.modal-titulo {
+  font-size: 1.4rem;
+  font-weight: 600;
+  margin-bottom: 10px;
+  color: #003366;
+}
+
+.modal-input {
+  padding: 10px;
+  margin-bottom: 12px;
+  border: 1px solid #cdd7e1;
+  border-radius: 6px;
+  font-size: 0.95rem;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.hora-container {
+  display: flex;
+  justify-content: space-between;
+  gap: 15px;
+  margin-bottom: 15px;
+}
+
+.hora-container label {
+  display: block;
+  font-size: 0.85rem;
+  color: #444;
+  margin-bottom: 4px;
+}
+
+.botones-modal {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.btn {
+  padding: 8px 14px;
+  font-size: 0.9rem;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.btn.guardar {
+  background-color: #003366;
+  color: white;
+}
+
+.btn.cancelar {
+  background-color: #ccc;
+  color: #333;
+}
+
+.swal2-container {
+  z-index: 20000 !important;
+}
+.swal2-popup {
+  z-index: 20001 !important;
+
 }
 
 @keyframes fadeIn {
