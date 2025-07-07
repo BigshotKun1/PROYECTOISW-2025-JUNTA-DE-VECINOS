@@ -16,7 +16,8 @@ export async function loginService(user) {
     });
 
     const userFound = await userRepository.findOne({
-      where: { email }
+      where: { email },
+      relations : ["rol"],
     });
 
     if (!userFound) {
@@ -33,7 +34,7 @@ export async function loginService(user) {
       nombreCompleto: userFound.nombreCompleto,
       email: userFound.email,
       rut: userFound.rut,
-      rol: userFound.rol,
+      rol: userFound.rol.nombreRol,
     };
 
     const accessToken = jwt.sign(payload, ACCESS_TOKEN_SECRET, {

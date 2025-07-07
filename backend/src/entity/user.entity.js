@@ -64,6 +64,11 @@ const UserSchema = new EntitySchema({
       unique: true,
     },
   ], relations: {
+    asistencias: {
+      target: "Asistencia_Reunion",
+      type: "one-to-many",
+      inverseSide: "id_usuario", 
+    },
     votaciones: {
       target: "Votaciones",
       type: "one-to-many",
@@ -79,18 +84,6 @@ const UserSchema = new EntitySchema({
       nullable: false,
     },
   },
-  indices: [
-    {
-      name: "IDX_USER_ID",
-      columns: ["id_usuario"],
-      unique: true,
-    },
-    {
-      name: "IDX_USER_EMAIL",
-      columns: ["email"],
-      unique: true,
-    },
-  ],
 });
 
 export default UserSchema;

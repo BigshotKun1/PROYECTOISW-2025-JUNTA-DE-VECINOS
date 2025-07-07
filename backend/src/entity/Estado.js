@@ -20,12 +20,12 @@ const EstadoSchema = new EntitySchema({
     reuniones: {
       target: "Reunion",
       type: "one-to-many",
-      inverseSide: "estado", // debe coincidir con el nombre usado en ReunionSchema
+      inverseSide: "estado", 
     },
     asistencias: {
       target: "Asistencia_Reunion",
       type: "one-to-many",
-      inverseSide: "estado", // debe coincidir con el nombre usado en Asistencia_ReunionSchema
+      inverseSide: "estado", 
     },
   },
   indices: [

@@ -1,7 +1,7 @@
 "use strict";
 import { EntitySchema } from "typeorm";
 
-const VotoSchema = new EntitySchema({
+const Voto = new EntitySchema({
   name: "Voto",
   tableName: "votos",
   columns: {
@@ -10,20 +10,32 @@ const VotoSchema = new EntitySchema({
       primary: true,
       generated: true,
     },
-    id_votacion: {
-      type: "int",
-      nullable: false,
-    },
     id_usuario: {
       type: "int",
       nullable: false,
     },
-    voto: {
-      type: "boolean",
+    id_opcion_voto: {
+      type: "int",
       nullable: false,
+    },
+    id_votacion: {
+      type: "int",
+      nullable: false,
+    },
+    fecha: {
+      type: "timestamp",
+      default: () => "CURRENT_TIMESTAMP",
     },
   },
   relations: {
+    opcionVoto: {
+      target: "OpcionesVoto",
+      type: "many-to-one",
+      joinColumn: {
+        name: "id_opcion_voto",
+        referencedColumnName: "id_opcion_voto",
+      },
+    },
     votacion: {
       target: "Votaciones",
       type: "many-to-one",
@@ -32,15 +44,7 @@ const VotoSchema = new EntitySchema({
         referencedColumnName: "id_votacion",
       },
     },
-    usuario: {
-      target: "User",
-      type: "many-to-one",
-      joinColumn: {
-        name: "id_usuario",
-        referencedColumnName: "id_usuario",
-      },
-    },
   },
 });
 
-export default VotoSchema;
+export default Voto;
