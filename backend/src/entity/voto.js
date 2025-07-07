@@ -18,6 +18,10 @@ const Voto = new EntitySchema({
       type: "int",
       nullable: false,
     },
+    id_votacion: {
+      type: "int",
+      nullable: false,
+    },
     fecha: {
       type: "timestamp",
       default: () => "CURRENT_TIMESTAMP",
