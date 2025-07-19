@@ -12,9 +12,11 @@ import '@styles/styles.css';
 import UserProfile from './pages/Perfil';
 import { AuthProvider } from './context/AuthContext';
 import CalendarioEventos from './components/Calendario';
+import Votaciones from '@pages/Votaciones.jsx';
 import Eventos from './pages/Eventos';
 import Reuniones from './pages/Reuniones';
 import ReunionDetalle from './pages/ReunionesDetalle';
+
 
 const router = createBrowserRouter([
   {
@@ -29,6 +31,7 @@ const router = createBrowserRouter([
       {
         path: '/users',
         element: (
+
           <ProtectedRoute allowedRoles={['Administrador','Presidente', 'Secretario','Tesorero']}>
             <Users />
           </ProtectedRoute>
@@ -36,6 +39,7 @@ const router = createBrowserRouter([
       },
       {
         path: '/eventos',
+
         element:
           <ProtectedRoute allowedRoles={['Administrador','Presidente', 'Secretario','Tesorero']}>
             <Eventos />
@@ -65,7 +69,12 @@ const router = createBrowserRouter([
             <UserProfile />
           </ProtectedRoute>
                 )
-  },
+
+      },
+      {
+        path: '/votaciones',
+        element: <Votaciones />
+      },
     ]
   },
   {
