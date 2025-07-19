@@ -59,26 +59,25 @@ export async function createReuniones(reunion) {
     }
 }
 export async function updateEstadoReunion(id, nuevoEstado) {
-  try {
-    const reunionActual = await getMeetingById(id);
+    try {
+        const reunionActual = await getMeetingById(id);
 
-    const cuerpo = {
-      fecha_reunion: reunionActual.fecha_reunion,
-      descripcion: reunionActual.descripcion_reunion || reunionActual.descripcion, // por si viene como 'descripcion'
-      hora_inicio: reunionActual.hora_inicio.slice(0, 5),
-      hora_termino: reunionActual.hora_termino.slice(0, 5),
-      lugar_reunion: reunionActual.lugar_reunion,
-      id_estado: parseInt(nuevoEstado)
-    };
+        const cuerpo = {
+            fecha_reunion: reunionActual.fecha_reunion,
+            descripcion: reunionActual.descripcion_reunion || reunionActual.descripcion, // por si viene como 'descripcion'
+            hora_inicio: reunionActual.hora_inicio.slice(0, 5),
+            hora_termino: reunionActual.hora_termino.slice(0, 5),
+            lugar_reunion: reunionActual.lugar_reunion,
+            id_estado: parseInt(nuevoEstado)
+        };
+        console.log("datos al backend:", cuerpo);
 
-    console.log("🟡 Enviando PATCH con:", cuerpo);
-
-    const res = await axios.patch(`meetings/${id}`, cuerpo);
-    return [res.data, null];
-  } catch (err) {
-    console.error("❌ Error actualizando estado de la reunión:", err.response?.data || err);
-    return [null, err];
-  }
+        const res = await axios.patch(`meetings/${id}`, cuerpo);
+        return [res.data, null];
+    } catch (err) {
+        console.error("❌ Error actualizando estado de la reunión:", err.response?.data || err);
+        return [null, err];
+    }
 }
 
 /*

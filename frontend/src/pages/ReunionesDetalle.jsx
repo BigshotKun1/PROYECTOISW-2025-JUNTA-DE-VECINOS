@@ -45,12 +45,12 @@ const ReunionDetalle = () => {
                 value={reunion.estado?.id_estado}
                 onChange={async (e) => {
                     const nuevoEstado = e.target.value;
-                    const [_, err] = await updateEstadoReunion(reunion.id_reunion, nuevoEstado);
+                    const [, err] = await updateEstadoReunion(reunion.id_reunion, nuevoEstado);
                     if (!err) {
                         const updated = await getMeetingById(reunion.id_reunion);
                         setReunion(updated);
                     }
-}}
+                }}
                 >
                 <option value="1">Pendiente</option>
                 <option value="2">Suspendida</option>
@@ -59,7 +59,7 @@ const ReunionDetalle = () => {
         </p>
         <h3>📋 Lista de Asistencias</h3>
             <ListaAsistencias asistencias={asistencias} onUpdate={async (idAsistencia, nuevoEstado) => {
-            const [_, err] = await updateAsistenciaEstado(idAsistencia, nuevoEstado);
+            const [, err] = await updateAsistenciaEstado(idAsistencia, nuevoEstado);
             if (!err) {
                 const nuevas = await getAsistenciasByReunion(reunionId);
                 nuevas.sort((a, b) => a.id_usuario.nombreCompleto.localeCompare(b.id_usuario.nombreCompleto));

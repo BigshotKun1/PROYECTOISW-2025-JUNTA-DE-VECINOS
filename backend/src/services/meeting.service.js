@@ -34,7 +34,7 @@ export async function createMeetingService(dataMeeting) {
             descripcion_reunion,
         } = dataMeeting;
 
-    // Verificar duplicidad
+    // Verificar que la reunion no este duplicada
         const isRepeated = await meetingRepository
             .createQueryBuilder("r")
             .where("r.fecha_reunion = :fechaReunion", { fechaReunion: fecha_reunion })
@@ -50,7 +50,6 @@ export async function createMeetingService(dataMeeting) {
             return [null, "Ya existe una reunión con esas propiedades."];
         }
 
-    // Crear reunión directamente (igual que en eventos)
         const newMeeting = meetingRepository.create({
             fecha_reunion,
             hora_inicio,
@@ -63,7 +62,7 @@ export async function createMeetingService(dataMeeting) {
 
         const meetingSaved = await meetingRepository.save(newMeeting);
 
-    // Crear asistencias
+
         await createAsistenciasService(meetingSaved.id_reunion);
 
         console.log("➡️ Fecha que TypeORM devolvió:", meetingSaved.fecha_reunion);

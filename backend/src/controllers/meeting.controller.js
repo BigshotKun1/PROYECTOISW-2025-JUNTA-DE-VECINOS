@@ -26,21 +26,21 @@ export async function createMeeting(req, res){
 
     const { error } = meetingBodyValidation.validate(body);
     if (error) {
-      return handleErrorClient(res, 400, "Error de validación", error.message);
+        return handleErrorClient(res, 400, "Error de validación", error.message);
     }
 
     const [meetingSaved, errorMeeting] = await createMeetingService(body);
 
     if (errorMeeting) {
-      return handleErrorClient(res, 400, "Error al crear reunión", errorMeeting);
+        return handleErrorClient(res, 400, "Error al crear reunión", errorMeeting);
     }
 
     await notifyVecinosReuniones(meetingSaved);
 
     return handleSuccess(res, 201, "Reunión creada exitosamente", meetingSaved);
-  } catch (error) {
+    } catch (error) {
     return handleErrorServer(res, 500, error.message);
-  }
+    }
 }
 
 export async function getMeeting(req, res){
