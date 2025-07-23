@@ -32,6 +32,9 @@ return (
             locale="es"
             events={reuniones}
             height="auto"
+            buttonText={{
+            today: "Hoy"
+            }}
         />
     </div>
     );

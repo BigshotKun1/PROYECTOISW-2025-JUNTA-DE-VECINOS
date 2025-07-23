@@ -72,6 +72,14 @@ const router = createBrowserRouter([
 
       },
       {
+        path: '/home',
+        element: (
+          <ProtectedRoute>
+            <Home />
+          </ProtectedRoute>
+  )
+      },
+      {
         path: '/votaciones',
         element: <Votaciones />
       },

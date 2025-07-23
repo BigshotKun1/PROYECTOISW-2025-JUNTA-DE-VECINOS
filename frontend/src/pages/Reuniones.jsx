@@ -36,7 +36,7 @@ const Reuniones = () => {
         const hoyUTC = new Date(hoy.getFullYear(), hoy.getMonth(), hoy.getDate());
 
         const diferenciaDias = (fechaUTC - hoyUTC) / (1000 * 60 * 60 * 24);
-        return diferenciaDias > 0 && diferenciaDias <= 14;
+        return diferenciaDias > 0 && diferenciaDias <= 31;
     });
 
 
@@ -54,10 +54,12 @@ const Reuniones = () => {
             return (
                 <div key={r.id_reunion}>
                 <p>📢 {r.descripcion_reunion}, 🕒 {formatoHora(inicio)} - {formatoHora(termino)}</p>
+                <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
                 <Link to={`/reunion/${r.id_reunion}`}>
-                    <button>Detalle</button>
+                    <button style={{ backgroundColor: "#003366", padding: "4px 12px", borderRadius: "6px", color: "white" }} >Detalles</button>
                 </Link>
-                <button onClick={() => handleDelete(r.id_reunion)}>Eliminar</button>
+                <button onClick={() => handleDelete(r.id_reunion)} style={{ backgroundColor: "#003366", padding: "4px 12px", borderRadius: "6px", color: "white" }} >Eliminar</button>
+                </div>
                 </div>
                 
             );
@@ -72,10 +74,15 @@ const Reuniones = () => {
             reunionesProximas.map(r => (
             <p key={r.id_reunion}>
                 🧩 {r.descripcion_reunion} ➡️ {r.fecha_reunion}
+            <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
             <Link to={`/reunion/${r.id_reunion}`}>
-                <button>Detalle</button>
+                <button style={{ backgroundColor: "#003366", padding: "4px 12px", borderRadius: "6px", color: "white" }}>
+                        Detalles
+                    </button>
+
             </Link>      
-            <button onClick={() => handleDelete(r.id_reunion)}>Eliminar</button>
+            <button onClick={() => handleDelete(r.id_reunion)}style={{ backgroundColor: "#003366", padding: "4px 12px", borderRadius: "6px", color: "white" }}>Eliminar</button>
+            </div>
             </p>
             
             ))
