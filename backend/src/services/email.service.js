@@ -50,6 +50,94 @@ export async function notifyVecinosEvento(evento) {
   }
 }
 
+export async function notifyVecinosEventoActualizado(evento) {
+  try {
+    const userRepository = AppDataSource.getRepository(User);
+
+    const vecinos = await userRepository
+      .createQueryBuilder("user")
+      .innerJoinAndSelect("user.rol", "rol")
+      .where("rol.nombreRol IN (:...roles)", {
+        roles: ["Vecino", "Presidente", "Tesorero", "Secretario"],
+      })
+      .select(["user.email", "user.nombreCompleto"])
+      .getMany();
+
+    if (vecinos.length === 0) {
+      console.log("No hay vecinos con esos roles para notificar.");
+      return;
+    }
+
+    const fecha = new Date(evento.fechaEvento);
+    const subject = `Evento actualizado: ${evento.nombreEvento}`;
+    const htmlContent = `
+      <h1>Actualización de Evento</h1>
+      <p>Estimado vecino,</p>
+      <p>El evento <strong>${evento.nombreEvento}</strong> ha sido actualizado.</p>
+      <p>Detalles actualizados:</p>
+      <ul>
+        <li><strong>Fecha:</strong> ${fecha.toLocaleDateString()}</li>
+        <li><strong>Lugar:</strong> ${evento.lugar_evento}</li>
+        <li><strong>Hora inicio:</strong> ${evento.hora_inicio}</li>
+        <li><strong>Hora término:</strong> ${evento.hora_termino}</li>
+      </ul>
+      <p>¡Esperamos contar con tu participación!</p>
+      <br />
+      <p>Saludos,</p>
+      <p>La Directiva</p>
+    `;
+
+    await Promise.all(
+      vecinos.map(({ email }) => sendEmail(email, subject, htmlContent))
+    );
+
+    console.log("Notificación de evento actualizado enviada a todos los vecinos.");
+  } catch (error) {
+    console.error("Error notificando a vecinos sobre actualización:", error);
+  }
+}
+
+export async function notifyVecinosEventoEliminado(evento) {
+  try {
+    const userRepository = AppDataSource.getRepository(User);
+
+    const vecinos = await userRepository
+      .createQueryBuilder("user")
+      .innerJoinAndSelect("user.rol", "rol")
+      .where("rol.nombreRol IN (:...roles)", {
+        roles: ["Vecino", "Presidente", "Tesorero", "Secretario"],
+      })
+      .select(["user.email", "user.nombreCompleto"])
+      .getMany();
+
+    if (vecinos.length === 0) {
+      console.log("No hay vecinos con esos roles para notificar.");
+      return;
+    }
+
+    const fecha = new Date(evento.fechaEvento);
+    const subject = `Evento cancelado: ${evento.nombreEvento}`;
+    const htmlContent = `
+      <h1>Cancelación de Evento</h1>
+      <p>Estimado vecino,</p>
+      <p>Lamentamos informar que el evento <strong>${evento.nombreEvento}</strong>, programado para el día <strong>${fecha.toLocaleDateString()}</strong>, ha sido cancelado.</p>
+      <p>Agradecemos su comprensión.</p>
+      <br />
+      <p>Saludos,</p>
+      <p>La Directiva</p>
+    `;
+
+    await Promise.all(
+      vecinos.map(({ email }) => sendEmail(email, subject, htmlContent))
+    );
+
+    console.log("Notificación de evento eliminado enviada a todos los vecinos.");
+  } catch (error) {
+    console.error("Error notificando a vecinos sobre eliminación:", error);
+  }
+}
+
+
 export async function notifyVecinosReuniones(reunion) {
   try {
     const userRepository = AppDataSource.getRepository(User);

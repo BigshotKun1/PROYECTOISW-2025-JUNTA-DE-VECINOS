@@ -13,7 +13,7 @@ import {
   handleErrorServer,
   handleSuccess,
 } from "../handlers/responseHandlers.js";
-import { notifyVecinosEvento } from "../services/email.service.js"
+import { notifyVecinosEvento, notifyVecinosEventoActualizado, notifyVecinosEventoEliminado  } from "../services/email.service.js"
 
 // Crear evento (solo directiva)
 export async function createEvento(req, res) {
@@ -67,6 +67,7 @@ export async function deleteEvento(req, res) {
     }
 
     handleSuccess(res, 200, "Evento eliminado con éxito", eventoEliminado);
+    await notifyVecinosEventoEliminado(eventoEliminado);
   } catch (error) {
     handleErrorServer(res, 500, error.message);
   }
@@ -87,6 +88,7 @@ export async function updateEvento(req, res) {
     }
 
     handleSuccess(res, 200, "Evento actualizado con éxito", eventoActualizado);
+    await notifyVecinosEventoActualizado(eventoActualizado);
   } catch (error) {
     handleErrorServer(res, 500, error.message);
   }

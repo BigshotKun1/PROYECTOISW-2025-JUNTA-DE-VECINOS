@@ -6,15 +6,23 @@ export async function createEventoService({ nombreEvento, fechaEvento, lugar_eve
   try {
     const eventoRepo = AppDataSource.getRepository("Evento");
     const miembroRepo = AppDataSource.getRepository("DirectivaMiembro");
+    const usuarioRepo = AppDataSource.getRepository("User");
 
-    // Verificar si el usuario es parte de alguna directiva activa
-    const miembro = await miembroRepo.findOne({
+    const usuario = await usuarioRepo.findOne({ where: { id_usuario }, relations: ["rol"] });
+    if (!usuario) {
+      return [null, "Usuario no encontrado"];
+    }
+
+    const esAdmin = usuario.rol?.nombreRol === "Administrador";
+
+    // Buscar miembro de directiva con periodo activo
+    const miembroActivo = await miembroRepo.findOne({
       where: { id_usuario },
       relations: ["periodo"],
     });
 
-    if (!miembro) {
-      return [null, "Solo miembros de la directiva pueden crear eventos"];
+    if (!miembroActivo && !esAdmin) {
+      return [null, "Solo administradores o miembros activos de la directiva pueden crear eventos"];
     }
 
     const nuevoEvento = eventoRepo.create({
@@ -24,7 +32,7 @@ export async function createEventoService({ nombreEvento, fechaEvento, lugar_eve
       hora_inicio,
       hora_termino,
       usuario: { id_usuario },
-      periodo: { id_periodo: miembro.periodo.id_periodo },
+      periodo: miembroActivo ? { id_periodo: miembroActivo.periodo.id_periodo } : null,
     });
 
     const guardado = await eventoRepo.save(nuevoEvento);
@@ -33,6 +41,7 @@ export async function createEventoService({ nombreEvento, fechaEvento, lugar_eve
     return [null, error.message];
   }
 }
+
 
 export async function getAllEventosService() {
   try {
