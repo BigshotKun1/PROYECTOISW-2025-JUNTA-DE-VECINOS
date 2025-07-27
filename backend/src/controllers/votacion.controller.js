@@ -7,26 +7,38 @@ import {
 import { votacionCreacionValidation } from "../validations/votacion.validation.js";
 import { notifyVecinosVotaciones } from "../services/email.service.js";
 
-export async function crearVotacion(req, res) {  
+export async function crearVotacion(req, res) {
   try {
-    const { body, user } = req;
-    const { error } = votacionCreacionValidation.validate(body);
-        if (error) {
-          return handleErrorClient(res, 400, "Error de validación", error.message);
-        }
+    const { body } = req;
 
-    const [nuevaVotacion, errorVotacion] = await createVotacionService({ ...body, id_usuario: user.id_usuario });
-      if (errorVotacion) {
-        return handleErrorClient(res, 400, "Error al crear la votacion", errorVotacion);
-      }
-  
-      handleSuccess(res, 201, "Votacion creada con éxito", nuevaVotacion);
-      await notifyVecinosVotaciones(nuevaVotacion); 
-  
-    } catch (error) {
-      handleErrorServer(res, 500, error.message);
+    // Validación con Joi
+    const { error } = votacionCreacionValidation.validate(body, { abortEarly: false });
+    if (error) {
+      return handleErrorClient(
+        res,
+        400,
+        "Datos inválidos",
+        error.details.map(d => d.message)
+      );
     }
-};
+
+    if (!body.opciones || !Array.isArray(body.opciones) || body.opciones.length < 2) {
+      return handleErrorClient(res, 400, "Debes ingresar al menos 2 opciones para la votación");
+    }
+
+    const [nuevaVotacion, errorVotacion] = await createVotacionService(body);
+
+    if (errorVotacion) {
+      return handleErrorClient(res, 400, "Error al crear votación", errorVotacion);
+    }
+
+    handleSuccess(res, 201, "Votación creada con éxito", nuevaVotacion);
+    await notifyVecinosVotaciones(nuevaVotacion);
+
+  } catch (error) {
+    handleErrorServer(res, 500, error.message);
+  }
+}
 
 export const obtenerVotacionPorIdController = async (req, res) => {
   try {

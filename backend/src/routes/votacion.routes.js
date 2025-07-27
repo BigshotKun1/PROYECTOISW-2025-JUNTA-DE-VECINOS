@@ -1,13 +1,15 @@
 import { Router } from "express";
+import { crearVotacion, obtenerVotacionesController, eliminarVotacion, obtenerVotacionPorIdController } from "../controllers/votacion.controller.js";
 import { authenticateJwt } from "../middlewares/authentication.middleware.js";
-import { isDirectiva } from "../middlewares/directiva.middleware.js";
-import { crearVotacion, eliminarVotacion, obtenerVotacionPorIdController, obtenerVotacionesController } from "../controllers/votacion.controller.js";
+import { isAdminyDirectiva } from "../middlewares/authorization.middleware.js";
 
 const router = Router();
 
-router.post("/", authenticateJwt, isDirectiva, crearVotacion);
+router.use(authenticateJwt);
+
+router.post("/", isAdminyDirectiva, crearVotacion);
+router.get("/", obtenerVotacionesController);
+router.delete("/:id_votacion", isAdminyDirectiva, eliminarVotacion);
 router.get("/:id", authenticateJwt, obtenerVotacionPorIdController);
-router.delete("/:id_votacion", authenticateJwt, isDirectiva, eliminarVotacion);
-router.get("/", authenticateJwt, obtenerVotacionesController);
+
 export default router;
-           
