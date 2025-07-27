@@ -10,9 +10,11 @@ import Swal from 'sweetalert2';
 
 const CalendarioEventos = ({ onEventoCreado }) => {
   const [eventos, setEventos] = useState([]);
+  const [user, setUser] = useState(null);
   const [modalAbierto, setModalAbierto] = useState(false);
   const [fechaSeleccionada, setFechaSeleccionada] = useState("");
   const [eventoSeleccionado, setEventoSeleccionado] = useState(null);
+  const [rolUsuario, setRolUsuario] = useState("");
   const [nuevoEvento, setNuevoEvento] = useState({
     nombreEvento: "",
     hora_inicio: "",
@@ -26,6 +28,9 @@ const CalendarioEventos = ({ onEventoCreado }) => {
 
 
   useEffect(() => {
+        const userData = JSON.parse(sessionStorage.getItem('usuario'));
+        setUser(userData);
+
     const fetchEventos = async () => {
       const eventosRaw = await getAllEventos();
 
@@ -52,10 +57,28 @@ const CalendarioEventos = ({ onEventoCreado }) => {
   }, []);
 
   const handleDateClick = (info) => {
-    setFechaSeleccionada(info.dateStr);
-    setModoEdicion(false);
-    setModalAbierto(true);
-  };
+  if (user?.rol === "Vecino") return; // ❌ Bloquear vecinos
+
+  const hoy = new Date();
+  hoy.setHours(0, 0, 0, 0);
+  const fechaClickeada = new Date(info.dateStr);
+  fechaClickeada.setHours(0, 0, 0, 0);
+
+  if (fechaClickeada < hoy) {
+    Swal.fire({
+      icon: 'warning',
+      title: 'Fecha inválida',
+      text: 'No puedes crear eventos en fechas pasadas.',
+    });
+    return;
+  }
+
+  setFechaSeleccionada(info.dateStr);
+  setModoEdicion(false);
+  setModalAbierto(true);
+};
+
+
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -120,53 +143,57 @@ const CalendarioEventos = ({ onEventoCreado }) => {
 };
 
 
-  const handleEventClick = async (info) => {
-    if (modoEliminar) {
-      const result = await Swal.fire({
-        title: `¿Estas seguro de que quieres eliminar el evento "${info.event.title}"?`,
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonText: 'Sí, eliminar',
-        cancelButtonText: 'Cancelar'
-      });
+ const handleEventClick = async (info) => {
+  if (modoEliminar) {
+    if (user?.rol === "Vecino") return; // ❌ No permitir eliminación
 
-      if (result.isConfirmed) {
-        const [res, err] = await deleteEvento(info.event.id);
-        if (!err) {
-          setEventos(prev => prev.filter(ev => ev.id !== info.event.id));
-          Swal.fire({
-            icon: 'success',
-            title: 'Eliminado',
-            text: '✅ El evento ha sido eliminado.',
-            timer: 1500,
-            showConfirmButton: false
-          });
-          if (onEventoCreado) onEventoCreado(); // También actualizar tabla al eliminar
-        } else {
-          Swal.fire({
-            icon: 'error',
-            title: 'Error',
-            text: '❌ No se pudo eliminar el evento: ' + err.message
-          });
-        }
+    const result = await Swal.fire({
+      title: `¿Estas seguro de que quieres eliminar el evento "${info.event.title}"?`,
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Sí, eliminar',
+      cancelButtonText: 'Cancelar'
+    });
+
+    if (result.isConfirmed) {
+      const [res, err] = await deleteEvento(info.event.id);
+      if (!err) {
+        setEventos(prev => prev.filter(ev => ev.id !== info.event.id));
+        Swal.fire({
+          icon: 'success',
+          title: 'Eliminado',
+          text: '✅ El evento ha sido eliminado.',
+          timer: 1500,
+          showConfirmButton: false
+        });
+        if (onEventoCreado) onEventoCreado();
+      } else {
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: '❌ No se pudo eliminar el evento: ' + err.message
+        });
       }
-      setModoEliminar(false);
-    } else {
-      // Mostrar detalles si no estás en modo eliminar
-      const { title, start, end, extendedProps } = info.event;
-      setEventoSeleccionado({
-        id: info.event.id,
-        title,
-        fecha: start.toLocaleDateString(),
-        horaInicio: start.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false }),
-        horaTermino: end.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false }),
-        lugar: extendedProps.lugar,
-        organizador: extendedProps.usuario
-      });
     }
-  };
+    setModoEliminar(false);
+  } else {
+    const { title, start, end, extendedProps } = info.event;
+    setEventoSeleccionado({
+      id: info.event.id,
+      title,
+      fecha: start.toLocaleDateString(),
+      horaInicio: start.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false }),
+      horaTermino: end.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false }),
+      lugar: extendedProps.lugar,
+      organizador: extendedProps.usuario
+    });
+  }
+};
+
 
   const handleEditarEvento = () => {
+    if (user?.rol === "Vecino") return; 
+
   setModalAbierto(true);
   setModoEdicion(true);
   setEventoEditandoId(eventoSeleccionado.id);
@@ -195,14 +222,14 @@ const CalendarioEventos = ({ onEventoCreado }) => {
         height="auto"
         dateClick={handleDateClick}
         eventClick={handleEventClick}
-        customButtons={{
+        customButtons={user?.rol !== "Vecino" ? {
           eliminarEvento: {
             text: modoEliminar ? "❌ Cancelar" : "🗑 Eliminar",
             click: () => setModoEliminar(!modoEliminar),
           }
-        }}
+        } : {}}
         headerToolbar={{
-          left: "prev,next today eliminarEvento",
+          left: user?.rol !== "Vecino" ? "prev,next today eliminarEvento" : "prev,next today",
           center: "title",
           right: ""
         }}

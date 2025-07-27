@@ -11,7 +11,7 @@ import ProtectedRoute from '@components/ProtectedRoute';
 import '@styles/styles.css';
 import UserProfile from './pages/Perfil';
 import { AuthProvider } from './context/AuthContext';
-import CalendarioEventos from './components/Calendario';
+import CalendarioEventos from '@components/Eventos/Calendario.jsx';
 import Votaciones from '@pages/Votaciones.jsx';
 import Eventos from './pages/Eventos';
 import Reuniones from './pages/Reuniones';
@@ -41,7 +41,7 @@ const router = createBrowserRouter([
         path: '/eventos',
 
         element:
-          <ProtectedRoute allowedRoles={['Administrador','Presidente', 'Secretario','Tesorero']}>
+          <ProtectedRoute allowedRoles={['Administrador','Presidente', 'Secretario','Tesorero', 'Vecino']}>
             <Eventos />
           </ProtectedRoute>
 

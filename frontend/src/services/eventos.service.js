@@ -1,6 +1,5 @@
 import axios from './root.service.js';
 
-
 export async function getAllEventos() {
   try {
     const response = await axios.get('/eventos');
