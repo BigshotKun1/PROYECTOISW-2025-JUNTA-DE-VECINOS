@@ -1,5 +1,5 @@
 import { AppDataSource } from "../config/configDb.js";
-import Votaciones from "../entity/votacion.js";
+import Votaciones from "../entity/Votacion.js";
 
 export async function createVotacionService({ titulo_votacion, descripcion_votacion, fecha_votacion,  hora_inicio, hora_termino, id_usuario }) {
   try {

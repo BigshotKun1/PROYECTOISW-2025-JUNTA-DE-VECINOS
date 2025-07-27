@@ -38,3 +38,15 @@ export async function deleteEvento(idEvento) {
     return [null, error];
   }
 }
+
+
+
+export async function updateEvento(idEvento, dataActualizada) {
+  try {
+    const response = await axios.patch(`/eventos/${idEvento}`, dataActualizada);
+    return [response.data, null];
+  } catch (error) {
+    console.error('Error al actualizar evento:', error);
+    return [null, error];
+  }
+}
