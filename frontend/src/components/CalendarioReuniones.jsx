@@ -3,11 +3,12 @@ import FullCalendar from "@fullcalendar/react";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import interactionPlugin from "@fullcalendar/interaction";
 import { useNavigate } from "react-router-dom";
-import { createReuniones,deleteMeetingById } from "@services/reuniones.service.js";
+import { createReuniones, deleteMeetingById } from "@services/reuniones.service.js";
 import EstadisticasReuniones from "@components/graficosReuniones.jsx";
 import "@styles/calendario.css";
+import { deleteDataAlert, showSuccessAlert, showErrorAlert } from "@helpers/sweetAlert.js";
 
-    const CalendarioReuniones = ({ reuniones, fetchReuniones }) => {
+const CalendarioReuniones = ({ reuniones, fetchReuniones }) => {
     const [mostrarModal, setMostrarModal] = useState(false);
     const [mostrarModalGraph, setMostrarModalGraph] = useState(false);
     const [newReunion, setNewReunion]= useState({
@@ -26,7 +27,6 @@ import "@styles/calendario.css";
 
     const handleSubmit = async (e) => {        
         e.preventDefault();
-
         try {
             const formattedData = {
                 descripcion_reunion: newReunion.descripcion_reunion,
@@ -35,25 +35,18 @@ import "@styles/calendario.css";
                 hora_termino: newReunion.hora_termino,
                 fecha_reunion: newReunion.fecha_reunion
             };
-            const hoy = new Date();
-            const hoyStr = hoy.toISOString().split("T")[0];
-
-            if (newReunion.fecha_reunion === hoyStr) {
-                alert("❌ No puedes crear una reunión para hoy.");
+            const [, error] = await createReuniones(formattedData);
+            if (error) {
+                showErrorAlert("Error al crear reunión", error.message);
                 return;
             }
-        
-            await createReuniones(formattedData);
             await fetchReuniones(); 
-
             setNewReunion({ descripcion_reunion: '', lugar_reunion: '', hora_inicio: '', hora_termino: '', fecha_reunion: '' });
             setMostrarModal(false); 
-
-            alert("✅ Reunión creada correctamente");
-
-        } catch (error) {
-            console.error("Error al crear reunión:", error);
-            alert("❌ Error al crear la reunión");
+            showSuccessAlert("¡Reunión creada!", "La reunión ha sido creada exitosamente");
+        } catch (e) {
+            console.error("error:",e);
+            showErrorAlert("Error inesperado", "Ocurrió un error al crear la reunión.");
         }
     };
 
@@ -86,17 +79,21 @@ import "@styles/calendario.css";
     const handleEventClick = async (info) => {
         if (modoEliminar) {
             try {
-                const [, err] = await deleteMeetingById(info.event.id);
-                await fetchReuniones(); 
+                const result = await deleteDataAlert();
                 
-                if (err) {
-                    alert("❌ Error al eliminar reunión");
-                } else {
-                    alert("✅ La reunión se eliminó correctamente");
+                if (result.isConfirmed) {
+                    const [, err] = await deleteMeetingById(info.event.id);
+                    await fetchReuniones(); 
+                    
+                    if (err) {
+                        showErrorAlert("Error al eliminar", "No se pudo eliminar la reunión. Inténtalo nuevamente.");
+                    } else {
+                        showSuccessAlert("¡Eliminada!", "La reunión se eliminó correctamente");
+                    }
                 }
             } catch (error) {
                 console.error("Error al eliminar reunión:", error);
-                alert("❌ Error al eliminar reunión.",error);
+                showErrorAlert("Error inesperado", "Ocurrió un error al eliminar la reunión.");
             } finally {
                 setModoEliminar(false);
             }
@@ -105,11 +102,9 @@ import "@styles/calendario.css";
             navigate(`/reunion/${eventId}`);
         }
     };
-
-    return (
-        <div className="contenedor-calendario">
-            <div>
-                
+return (
+    <div className="contenedor-calendario">
+        <div>            
                 {mostrarModal && (
                     <div className="modal-overlay">
                         <div className="modal-content">
@@ -140,24 +135,23 @@ import "@styles/calendario.css";
                                 </div>
                                 
                                 <div style={{ display: "flex", justifyContent: "flex-end",  gap: "90px", marginTop: "20px"}}>
-                                    <button type="submit" style={{ alignSelf: "flex-end", padding: "8px 16px", background: "#003366",color: "white", border: "none", borderRadius: "5px",cursor: "pointer",}}>Guardar</button>
-                                    <button type="button" onClick={() => setMostrarModal(false)} style={{ alignSelf: "flex-end", padding: "8px 16px", background: "#ccc",color: "#333", border: "none", borderRadius: "5px",cursor: "pointer",}} >Cancelar</button>
+                                    <button type="submit" style={{ alignSelf: "flex-end", padding: "8px 16px", background: "#003366",color: "white", border: "none", borderRadius: "5px",cursor: "pointer"}}>Guardar</button>
+                                    <button type="button" onClick={() => setMostrarModal(false)} style={{ alignSelf: "flex-end", padding: "8px 16px", background: "#ccc",color: "#333", border: "none", borderRadius: "5px",cursor: "pointer"}} >Cancelar</button>
                                 </div>
                             </form>
                         </div>
                     </div>
                 )}
         
-                {mostrarModalGraph && (
-                    <div style={{position: "fixed", top: 0, left: 0, width: "100vw", height: "100vh", background: "rgba(0, 0, 0, 0.4)", display: "flex", justifyContent: "center",alignItems: "center",zIndex: 1000,}}>
-                        <div style={{ background: "white", padding: "20px", width: "90%", maxWidth: "1000px", borderRadius: "10px", display: "flex", flexDirection: "column", gap: "20px", maxHeight: "90vh", overflowY: "auto",}}>
-                            <h2 style={{ fontSize: "1.5rem", marginBottom: "10px" }}>Estadísticas de Reuniones</h2>
-                            <EstadisticasReuniones />
+                    {mostrarModalGraph && (
+                        <div style={{position: "fixed", top: 0, left: 0, width: "100vw", height: "100vh", background: "rgba(0, 0, 0, 0.4)", display: "flex", justifyContent: "center",alignItems: "center",zIndex: 1000,}}>
+                            <div style={{ background: "white", padding: "20px", width: "90%", maxWidth: "1000px", borderRadius: "10px", display: "flex", flexDirection: "column", gap: "20px", maxHeight: "90vh", overflowY: "auto",}}>
+                                <h2 style={{ fontSize: "1.5rem", marginBottom: "10px" }}>Estadísticas de Reuniones</h2>
+                                <EstadisticasReuniones />
                             <button onClick={() => setMostrarModalGraph(false)} style={{ alignSelf: "flex-end", padding: "8px 16px", background: "#003366",color: "white", border: "none", borderRadius: "5px",cursor: "pointer",}}>Cerrar</button>
                         </div>
                     </div>
                 )}
-                
                 </div>
                     <h2 style={{ textAlign: "center", marginBottom: "20px" }}>🗓️ Calendario de Reuniones</h2>
                     <FullCalendar

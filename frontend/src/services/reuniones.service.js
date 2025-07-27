@@ -54,8 +54,13 @@ export async function createReuniones(reunion) {
     const response = await axios.post("meetings/", reunion);
     return [response.data, null];
   } catch (error) {
-    console.error("Error al crear reunion:", error);
-    return [null, error];
+    //const mensajeError = error?.response?.details || error?.response?.message;
+    const mensajeError =
+      error?.response?.data?.details || error?.response?.data?.message;
+    return [
+      null,
+      { message: mensajeError || "Error al crear reunión", fullError: error },
+    ];
   }
 }
 
