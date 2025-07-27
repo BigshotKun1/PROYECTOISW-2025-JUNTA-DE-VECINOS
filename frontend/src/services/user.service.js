@@ -30,3 +30,34 @@ export async function deleteUser(rut) {
     return error.response.data;
   }
 }
+
+export async function uploadCertificado(rut, file) {
+  try {
+    const formData = new FormData();
+    formData.append("certificado", file);
+
+    const response = await axios.post(
+      `user/${rut}/upload-certificado`,
+      formData,
+      {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      }
+    );
+    return [response.data, null];
+  } catch (error) {
+    console.error("Error al subir el certificado:", error);
+    return [null, error];
+  }
+}
+
+export async function getUser(rut) {
+  try {
+    const { data } = await axios.get(`/user/detail/?rut=${rut}`);
+    const formattedData = data.data.map(formatUserData);
+    return formattedData;
+  } catch (error) {
+    return error.response.data;
+  }
+}

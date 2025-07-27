@@ -70,6 +70,10 @@ async function setupServer() {
       "/uploads/actas",
       express.static(path.join(__dirname, "uploads", "actas")),
     );
+    app.use(
+      "/uploads/certificadosResidencia",
+      express.static(path.join(__dirname, "uploads", "certificadosResidencia")),
+    );
 
     passportJwtSetup();
 

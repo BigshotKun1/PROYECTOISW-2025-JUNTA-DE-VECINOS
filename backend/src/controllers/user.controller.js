@@ -15,6 +15,7 @@ import {
   handleErrorServer,
   handleSuccess,
 } from "../handlers/responseHandlers.js";
+import { AppDataSource } from "../config/configDb.js";
 
 export async function createUser(req, res) {
   try {
@@ -62,11 +63,7 @@ export async function getUsers(req, res) {
       ? handleSuccess(res, 204)
       : handleSuccess(res, 200, "Usuarios encontrados", users);
   } catch (error) {
-    handleErrorServer(
-      res,
-      500,
-      error.message,
-    );
+    handleErrorServer(res, 500, error.message);
   }
 }
 
@@ -102,7 +99,13 @@ export async function updateUser(req, res) {
 
     const [user, userError] = await updateUserService({ rut, id, email }, body);
 
-    if (userError) return handleErrorClient(res, 400, "Error modificando al usuario", userError);
+    if (userError)
+      return handleErrorClient(
+        res,
+        400,
+        "Error modificando al usuario",
+        userError,
+      );
 
     handleSuccess(res, 200, "Usuario modificado correctamente", user);
   } catch (error) {
@@ -135,10 +138,48 @@ export async function deleteUser(req, res) {
       email,
     });
 
-    if (errorUserDelete) return handleErrorClient(res, 404, "Error eliminado al usuario", errorUserDelete);
+    if (errorUserDelete)
+      return handleErrorClient(
+        res,
+        404,
+        "Error eliminado al usuario",
+        errorUserDelete,
+      );
 
     handleSuccess(res, 200, "Usuario eliminado correctamente", userDelete);
   } catch (error) {
     handleErrorServer(res, 500, error.message);
+  }
+}
+
+export async function subirCertificadoResidencia(req, res) {
+  const userRepository = AppDataSource.getRepository("User");
+  const rutUser = req.params.rut;
+  const file = req.file;
+
+  if (!file) {
+    return res.status(400).json({ message: "No se ha subido ningún archivo." });
+  }
+
+  try {
+    const user = await userRepository.findOneBy({
+      rut: rutUser,
+    });
+    if (!user) {
+      return res.status(404).json({ message: "Usuario no encontrado." });
+    }
+
+    user.certificadoResidencia_pdf = `/uploads/certificadosResidencia/${file.filename}`;
+    await userRepository.save(user);
+
+    return res.status(200).json({
+      message: "Certificado de Residencia subido correctamente.",
+      user,
+    });
+  } catch (error) {
+    console.error(error);
+    res
+      .status(500)
+      .json({ message: "Error al subir Certificado de Residencia." });
   }
 }

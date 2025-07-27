@@ -4,25 +4,15 @@ import '@styles/perfil.css';
 
 const UserProfile = () => {
   const [user, setUser] = useState(null);
-  const [pdfFile, setPdfFile] = useState(null);
   const [mostrarModalHistorial, setMostrarModalHistorial] = useState(false);
-const [historialAsistencia, setHistorialAsistencia] = useState([]);
-
+  const [historialAsistencia, setHistorialAsistencia] = useState([]);
+  
   useEffect(() => {
     const userData = JSON.parse(sessionStorage.getItem('usuario'));
     setUser(userData);
   }, []);
 
     const autorizado =  user?.rol === "Presidente"|| user?.rol === "Tesorero"|| user?.rol === "Secretario" || user?.rol === "Vecino";
-  const handlePdfChange = (e) => {
-    const file = e.target.files[0];
-    if (file && file.type === "application/pdf") {
-      const pdfURL = URL.createObjectURL(file);
-      setPdfFile(pdfURL);
-    } else {
-      alert("Solo se permiten archivos PDF.");
-    }
-  };
 
   if (!user) return <p>Cargando perfil...</p>;
 
@@ -37,8 +27,9 @@ const [historialAsistencia, setHistorialAsistencia] = useState([]);
     console.error("Error al cargar historial:", error);
     alert("❌ No se pudo cargar el historial de asistencias.");
   }
-};
-
+  };
+  console.log("userData",user)
+  console.log("certificado de residencia",user.certificadoResidencia_pdf)
 
   return (
     
@@ -54,12 +45,9 @@ const [historialAsistencia, setHistorialAsistencia] = useState([]);
           <p><strong>RUT:</strong> {user.rut}</p>
           <p><strong>Email:</strong> {user.email}</p>
           <p><strong>Rol:</strong> {typeof user.rol === 'object' ? user.rol.nombreRol : user.rol}</p>
+          <p><strong>Certificado de Residencia:</strong> {user.certificadoResidencia_pdf}</p>
 
           {autorizado && (<button onClick={abrirModalHistorial} style={{ marginTop: "20px", padding: "8px 16px", background: "#003366", color: "white", border: "none", borderRadius: "5px", cursor: "pointer"}}>Ver historial de asistencia</button>)}
-          <div className="upload-section">
-            <label htmlFor="pdfUpload"><strong>Subir documento PDF:</strong></label>
-            <input type="file" accept="application/pdf" onChange={handlePdfChange} id="pdfUpload"/>
-          </div>
           {mostrarModalHistorial && (
         <div className="modal-overlay"> 
           <div className="modal-content">
@@ -93,12 +81,6 @@ const [historialAsistencia, setHistorialAsistencia] = useState([]);
         </div>
       </div>
       )}
-          {pdfFile && (
-          <div className="pdf-viewer">
-
-              <embed src={pdfFile} type="application/pdf" width="100%" height="400px" />
-            </div>
-          )}
         </div>
       </div>
     </div>

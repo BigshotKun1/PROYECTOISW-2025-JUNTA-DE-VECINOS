@@ -1,21 +1,26 @@
-"use strict";
 import multer from "multer";
-import path, { dirname, join } from "path";
+import path from "path";
 import fs from "fs";
 import { fileURLToPath } from "url";
+import { dirname, join } from "path";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
-const uploadDir = join(__dirname, "..", "uploads", "actas");
+const certificadosDir = join(
+  __dirname,
+  "..",
+  "uploads",
+  "certificadosResidencia",
+);
 
-if (!fs.existsSync(uploadDir)) {
-  fs.mkdirSync(uploadDir, { recursive: true });
+if (!fs.existsSync(certificadosDir)) {
+  fs.mkdirSync(certificadosDir, { recursive: true });
 }
 
-const storage = multer.diskStorage({
+const storageCertificados = multer.diskStorage({
   destination: function (req, file, cb) {
-    cb(null, uploadDir);
+    cb(null, certificadosDir);
   },
   filename: function (req, file, cb) {
     const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
@@ -23,4 +28,4 @@ const storage = multer.diskStorage({
   },
 });
 
-export const upload = multer({ storage });
+export const uploadCertificados = multer({ storage: storageCertificados });

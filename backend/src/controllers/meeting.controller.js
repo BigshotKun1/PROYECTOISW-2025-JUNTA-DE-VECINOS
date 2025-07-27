@@ -153,25 +153,25 @@ export async function deleteMeeting(req, res) {
   }
 }
 
-export const subirActaReunion = async (req, res) => {
-  const reunionRepo = AppDataSource.getRepository("Reunion");
-  const idReunion = req.params.id;
-  const file = req.file;
-
-  if (!file) {
-    return res.status(400).json({ message: "No se ha subido ningún archivo." });
-  }
-
+export async function subirActaReunion(req, res) {
   try {
-    const reunion = await reunionRepo.findOneBy({
+    const meetingRepository = AppDataSource.getRepository("Reunion");
+    const idReunion = req.params.id;
+    const file = req.file;
+
+    if (!file) {
+      return res
+        .status(400)
+        .json({ message: "No se ha subido ningún archivo." });
+    }
+    const reunion = await meetingRepository.findOneBy({
       id_reunion: parseInt(idReunion),
     });
     if (!reunion) {
       return res.status(404).json({ message: "Reunión no encontrada." });
     }
-
     reunion.acta_pdf = `/uploads/actas/${file.filename}`;
-    await reunionRepo.save(reunion);
+    await meetingRepository.save(reunion);
 
     return res
       .status(200)
@@ -180,4 +180,4 @@ export const subirActaReunion = async (req, res) => {
     console.error(error);
     res.status(500).json({ message: "Error al subir el acta." });
   }
-};
+}

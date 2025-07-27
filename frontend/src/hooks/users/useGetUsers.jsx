@@ -12,7 +12,8 @@ const useUsers = () => {
                 rut: user.rut,
                 email: user.email,
                 rol: user.rol,
-                createdAt: user.createdAt
+                certificadoResidencia_pdf: user.certificadoResidencia_pdf,
+                createdAt: user.createdAt,
             }));
             dataLogged(formattedData);
             setUsers(formattedData);
