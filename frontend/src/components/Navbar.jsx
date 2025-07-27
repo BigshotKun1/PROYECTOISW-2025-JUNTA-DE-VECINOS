@@ -35,7 +35,7 @@ const Navbar = () => {
         {/* DERECHA */}
         <div className={`nav-menu ${menuOpen ? 'activado' : ''}`}>
           <ul className="navbar-right">
-  {['Administrador', 'Tesorero', 'Presidente', 'Secretario'].includes(userRole) && (
+  {['Administrador', 'Tesorero', 'Presidente', 'Secretario','Vecino'].includes(userRole) && (
     <>
       <li>
         <NavLink to="/home" className="nav-link">

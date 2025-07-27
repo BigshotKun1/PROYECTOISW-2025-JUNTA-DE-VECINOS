@@ -49,7 +49,7 @@ const router = createBrowserRouter([
       {
         path: '/reuniones',
         element:
-        <ProtectedRoute allowedRoles={['Administrador','Presidente', 'Secretario','Tesorero']}>
+        <ProtectedRoute allowedRoles={['Administrador','Presidente', 'Secretario','Tesorero','Vecino']}>
           <Reuniones />
         </ProtectedRoute>
 
@@ -58,7 +58,7 @@ const router = createBrowserRouter([
       {
         path: '/reunion/:id',
         element: 
-        <ProtectedRoute allowedRoles={['Administrador','Presidente', 'Secretario','Tesorero']}>
+        <ProtectedRoute allowedRoles={['Administrador','Presidente', 'Secretario','Tesorero','Vecino']}>
           <ReunionDetalle />
         </ProtectedRoute>
       },

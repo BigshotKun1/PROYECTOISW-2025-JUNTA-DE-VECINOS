@@ -1,25 +1,28 @@
 import { useEffect, useState } from "react";
-import { getAllReuniones,deleteMeetingById } from "@services/reuniones.service.js";
-import CalendarioReuniones from "@components/CalendarioReuniones.jsx"; // <-- crea este componente
-import { Link } from "react-router-dom";
-import '@styles/Eventos.css'; 
+import { getAllReuniones } from "@services/reuniones.service.js";
+import CalendarioReuniones from "@components/CalendarioReuniones.jsx";
+
 
 const Reuniones = () => {
     const [reuniones, setReuniones] = useState([]);
 
     const fetchReuniones = async () => {
-        const data = await getAllReuniones();
-        setReuniones(data || []);
+    const data = await getAllReuniones();
+    const formateadas = data.map(r => {
+    const horaInicio = r.hora_inicio?.slice(0, 5);
+    return {
+        ...r,
+        title: `${horaInicio} ${r.descripcion_reunion}`,
+        start: r.fecha_reunion,        
+        backgroundColor: "#3887eeff",
+        borderColor: "#f8fbff", 
+        textColor: "#ffffffff",
+        id: r.id_reunion, 
+    };
+    });
+    setReuniones(formateadas);
     };
 
-    const handleDelete = async (id) => {
-        try {
-            await deleteMeetingById(id);
-            await fetchReuniones();
-        } catch (error) {
-            console.error("Error al eliminar reunión:", error);
-        }
-    };
 
     useEffect(() => {
         fetchReuniones();
@@ -31,17 +34,22 @@ const Reuniones = () => {
     const reunionesHoy = reuniones.filter(r => r.fecha_reunion === hoyStr);
 
     const reunionesProximas = reuniones.filter(r => {
+
         const fecha = new Date(r.fecha_reunion);
         const fechaUTC = new Date(fecha.getFullYear(), fecha.getMonth(), fecha.getDate());
-        const hoyUTC = new Date(hoy.getFullYear(), hoy.getMonth(), hoy.getDate());
+        const hoyUTC = new Date(hoy.getFullYear(), hoy.getMonth(), hoy.getDate(),hoy.getHours(),hoy.getMinutes());
 
+        console.log("fechaUTC: ",fechaUTC)
+        console.log("hoyUTC: ",hoyUTC)
         const diferenciaDias = (fechaUTC - hoyUTC) / (1000 * 60 * 60 * 24);
-        return diferenciaDias > 0 && diferenciaDias <= 31;
+        console.log("diferenciaDias: ",diferenciaDias)
+        return diferenciaDias > -0.3 && diferenciaDias <= 14;
     });
 
-
     return (
+        
     <div className="contenedor-principal">
+        
         <div className="panel-lateral">
         <h2>{hoy.toLocaleDateString('es-CL', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</h2>
         
@@ -54,11 +62,7 @@ const Reuniones = () => {
             return (
                 <div key={r.id_reunion}>
                 <p>📢 {r.descripcion_reunion}, 🕒 {formatoHora(inicio)} - {formatoHora(termino)}</p>
-                <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-                <Link to={`/reunion/${r.id_reunion}`}>
-                    <button style={{ backgroundColor: "#003366", padding: "4px 12px", borderRadius: "6px", color: "white" }} >Detalles</button>
-                </Link>
-                <button onClick={() => handleDelete(r.id_reunion)} style={{ backgroundColor: "#003366", padding: "4px 12px", borderRadius: "6px", color: "white" }} >Eliminar</button>
+                <div  style={{ display: "flex", alignItems: "center", gap: "8px" }}>
                 </div>
                 </div>
                 
@@ -74,14 +78,7 @@ const Reuniones = () => {
             reunionesProximas.map(r => (
             <p key={r.id_reunion}>
                 🧩 {r.descripcion_reunion} ➡️ {r.fecha_reunion}
-            <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-            <Link to={`/reunion/${r.id_reunion}`}>
-                <button style={{ backgroundColor: "#003366", padding: "4px 12px", borderRadius: "6px", color: "white" }}>
-                        Detalles
-                    </button>
-
-            </Link>      
-            <button onClick={() => handleDelete(r.id_reunion)}style={{ backgroundColor: "#003366", padding: "4px 12px", borderRadius: "6px", color: "white" }}>Eliminar</button>
+            <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>     
             </div>
             </p>
             
@@ -90,11 +87,12 @@ const Reuniones = () => {
             <p>No hay reuniones en los próximos días</p>
         )}
         </div>
-
         <div className="panel-calendario">
-        <CalendarioReuniones />
+        <CalendarioReuniones reuniones={reuniones} fetchReuniones={fetchReuniones} />
         </div>
+        
     </div>
+    
     );
 };
 

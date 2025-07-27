@@ -34,7 +34,7 @@ export async function createMeeting(req, res) {
     }
 
     const [meetingSaved, errorMeeting] = await createMeetingService(body);
-
+    console.log("error al crear reu:", errorMeeting);
     if (errorMeeting) {
       return handleErrorClient(
         res,

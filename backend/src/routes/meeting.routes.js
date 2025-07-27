@@ -15,10 +15,9 @@ import { subirActaReunion } from "../controllers/meeting.controller.js";
 const router = Router();
 
 router.get("/all", authenticateJwt, getMeetings);
-
+router.get("/:id", authenticateJwt, getMeeting);
 router.use(authenticateJwt).use(isAdminyDirectiva);
 router
-  .get("/:id", getMeeting)
   .patch("/:id", updateMeeting)
   .delete("/:id", deleteMeeting)
   .post("/", createMeeting)
