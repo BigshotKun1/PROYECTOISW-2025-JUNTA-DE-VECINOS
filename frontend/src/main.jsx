@@ -11,9 +11,12 @@ import ProtectedRoute from '@components/ProtectedRoute';
 import '@styles/styles.css';
 import UserProfile from './pages/Perfil';
 import { AuthProvider } from './context/AuthContext';
+import CalendarioEventos from './components/Calendario';
+import Votaciones from '@pages/Votaciones.jsx';
 import Eventos from './pages/Eventos';
 import Reuniones from './pages/Reuniones';
 import ReunionDetalle from './pages/ReunionesDetalle';
+
 
 const router = createBrowserRouter([
   {
@@ -28,6 +31,7 @@ const router = createBrowserRouter([
       {
         path: '/users',
         element: (
+
           <ProtectedRoute allowedRoles={['Administrador','Presidente', 'Secretario','Tesorero']}>
             <Users />
           </ProtectedRoute>
@@ -35,6 +39,7 @@ const router = createBrowserRouter([
       },
       {
         path: '/eventos',
+
         element:
           <ProtectedRoute allowedRoles={['Administrador','Presidente', 'Secretario','Tesorero']}>
             <Eventos />
@@ -44,7 +49,7 @@ const router = createBrowserRouter([
       {
         path: '/reuniones',
         element:
-        <ProtectedRoute allowedRoles={['Administrador','Presidente', 'Secretario','Tesorero']}>
+        <ProtectedRoute allowedRoles={['Administrador','Presidente', 'Secretario','Tesorero','Vecino']}>
           <Reuniones />
         </ProtectedRoute>
 
@@ -53,7 +58,7 @@ const router = createBrowserRouter([
       {
         path: '/reunion/:id',
         element: 
-        <ProtectedRoute allowedRoles={['Administrador','Presidente', 'Secretario','Tesorero']}>
+        <ProtectedRoute allowedRoles={['Administrador','Presidente', 'Secretario','Tesorero','Vecino']}>
           <ReunionDetalle />
         </ProtectedRoute>
       },
@@ -64,7 +69,20 @@ const router = createBrowserRouter([
             <UserProfile />
           </ProtectedRoute>
                 )
-  },
+
+      },
+      {
+        path: '/home',
+        element: (
+          <ProtectedRoute>
+            <Home />
+          </ProtectedRoute>
+  )
+      },
+      {
+        path: '/votaciones',
+        element: <Votaciones />
+      },
     ]
   },
   {

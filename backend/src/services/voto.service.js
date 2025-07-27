@@ -3,9 +3,12 @@ import Voto from "../entity/voto.js";
 
 const votoRepo = AppDataSource.getRepository(Voto);
 
-const emitirVoto = async (data) => {
+const emitirVoto = async (data, userId) => {
   try {
-    const nuevoVoto = votoRepo.create(data);
+    const nuevoVoto = votoRepo.create({
+      ...data,
+      id_usuario: userId,
+    });
     return await votoRepo.save(nuevoVoto);
   } catch (error) {
     console.error("Error al emitir voto:", error);
