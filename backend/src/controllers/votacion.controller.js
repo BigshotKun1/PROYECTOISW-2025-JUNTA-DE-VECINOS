@@ -7,41 +7,38 @@ import {
 import { votacionCreacionValidation } from "../validations/votacion.validation.js";
 import { notifyVecinosVotaciones } from "../services/email.service.js";
 
-export async function crearVotacion(req, res) {  
+export async function crearVotacion(req, res) {
   try {
-    const { body, user } = req;
-    const { error } = votacionCreacionValidation.validate(body);
-        if (error) {
-          return handleErrorClient(res, 400, "Error de validación", error.message);
-        }
+    const { body } = req;
+    const id_usuario = req.user.id_usuario; // <-- lo toma del usuario autenticado
 
-    const [nuevaVotacion, errorVotacion] = await createVotacionService({ ...body, id_usuario: user.id_usuario });
-      if (errorVotacion) {
-        return handleErrorClient(res, 400, "Error al crear la votacion", errorVotacion);
-      }
-  
-      handleSuccess(res, 201, "Votacion creada con éxito", nuevaVotacion);
-      await notifyVecinosVotaciones(nuevaVotacion); 
-  
-    } catch (error) {
-      handleErrorServer(res, 500, error.message);
+    // Validación con Joi
+    const { error } = votacionCreacionValidation.validate(body, { abortEarly: false });
+    if (error) {
+      return handleErrorClient(
+        res,
+        400,
+        "Datos inválidos",
+        error.details.map(d => d.message)
+      );
     }
-};
 
-export const obtenerVotacionPorIdController = async (req, res) => {
-  try {
-    const { id } = req.params;
-    const votacion = await obtenerVotacionPorId(id);
-
-    res.status(200).json({
-      message: "Votación obtenida exitosamente",
-      votacion,
+    const [nuevaVotacion, errorVotacion] = await createVotacionService({
+      ...body,
+      id_usuario // <-- lo agrega aquí
     });
+
+    if (errorVotacion) {
+      return handleErrorClient(res, 400, "Error al crear votación", errorVotacion);
+    }
+
+    handleSuccess(res, 201, "Votación creada con éxito", nuevaVotacion);
+    await notifyVecinosVotaciones(nuevaVotacion);
+
   } catch (error) {
-    console.error("Error al obtener la votación por ID:", error);
-    res.status(error.status || 500).json({ message: error.message || "Error interno del servidor" });
+    handleErrorServer(res, 500, error.message);
   }
-};
+}
 
 export const eliminarVotacion = async (req, res) => {
   try {
@@ -52,7 +49,7 @@ export const eliminarVotacion = async (req, res) => {
     }
 
     // Aquí llamarías a tu servicio para eliminar la votación
-    const [resultado, error] = await deleteVotacionService(id_votacion);
+    const [resultado, error] = await deleteVotacionService({ id_votacion });
 
     if (error) {
       return res.status(400).json({ status: "Client error", message: error });

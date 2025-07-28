@@ -1,0 +1,80 @@
+:root {
+  --primary: #003366;
+  --primary-light: #e3f2fd;
+  --background: #f9f9f9;
+  --border: #e0e0e0;
+  --text: #222;
+  --radius: 10px;
+  --shadow: 0 2px 12px rgba(0,0,0,0.07);
+}
+
+.votaciones-table-container {
+  max-width: 900px;
+  margin: 2rem auto;
+  background: var(--background);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 2rem;
+}
+
+.votaciones-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  font-family: 'Segoe UI', Arial, sans-serif;
+  color: var(--text);
+  background: transparent;
+}
+
+.votaciones-table th, .votaciones-table td {
+  padding: 0.9rem 1.2rem;
+  text-align: left;
+}
+
+.votaciones-table th {
+  background: var(--primary);
+  color: #fff;
+  font-weight: 600;
+  border-top-left-radius: var(--radius);
+  border-top-right-radius: var(--radius);
+}
+
+.votaciones-table tr:nth-child(even) {
+  background: #f0f4fa;
+}
+
+.votaciones-table tr:hover {
+  background: var(--primary-light);
+  transition: background 0.2s;
+}
+
+.votaciones-table td {
+  border-bottom: 1px solid var(--border);
+}
+
+.votaciones-table tr:last-child td {
+  border-bottom: none;
+}
+
+.btn.btn-primary {
+  background: var(--primary);
+  color: #fff;
+  border: 2px solid var(--primary);
+  border-radius: var(--radius);
+  padding: 0.6rem 1.5rem;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: background 0.2s, color 0.2s, border 0.2s;
+}
+
+.btn.btn-primary:hover, .btn.btn-primary:focus {
+  background: #fff;
+  color: var(--primary);
+  border: 2px solid var(--primary);
+  outline: none;
+}

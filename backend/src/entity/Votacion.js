@@ -32,6 +32,10 @@ const VotacionesSchema = new EntitySchema({
     length: 1024,
     nullable: true,
   },
+  opciones: {
+  type: "simple-json", // o "json" según tu base de datos
+  nullable: false,
+},
   id_periodo: {
     type: "int",
     nullable: false,
@@ -54,12 +58,6 @@ relations: {
       referencedColumnName: "id_periodo",
     },
   },
-  opciones: {
-  target: "OpcionesVoto",
-  type: "one-to-many",
-  inverseSide: "votacion",
-  cascade: true,
-},
   votos: {
     target: "Voto",
     type: "one-to-many",
