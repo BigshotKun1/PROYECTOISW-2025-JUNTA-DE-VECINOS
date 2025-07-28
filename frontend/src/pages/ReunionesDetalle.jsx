@@ -138,9 +138,9 @@ const ReunionDetalle = () => {
           const updated = await getMeetingById(reunion.id_reunion);
           setReunion(updated);
           if (err) {
-            showErrorAlert("Error al eliminar", "No se pudo eliminar el acta. Inténtalo nuevamente.");
+            showErrorAlert("Error al eliminar", "No se pudo eliminar la reunión. Inténtalo nuevamente.");
           } else {
-            showSuccessAlert("¡Eliminada!", "El acta se eliminó correctamente");
+            showSuccessAlert("¡Eliminada!", "La reunión se eliminó correctamente");
           }
         }
       } catch (error) {
@@ -152,6 +152,14 @@ const ReunionDetalle = () => {
     if (!reunion) return <p>Cargando reunión...</p>;
     
     return (
+        <div
+    className="container mt-4 mb-5"
+    style={{
+      backgroundColor: "#f8fbff", // o el color que quieras
+      minHeight: "100vh", 
+      paddingTop: "250px"        // para ocupar toda la altura de la pantalla
+    }}
+  >
       <div className="contenedor-detalle">
         <div>
             <div style={{display: "flex", justifyContent: "space-between", alignItems: "center"}}>
@@ -274,6 +282,7 @@ const ReunionDetalle = () => {
         )}
         </div>
       )}
+      </div>
       </div>
     );
 };

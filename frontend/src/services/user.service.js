@@ -35,7 +35,7 @@ export async function uploadCertificado(rut, file) {
   try {
     const formData = new FormData();
     formData.append("certificado", file);
-
+    console.log(rut);
     const response = await axios.post(
       `user/${rut}/upload-certificado`,
       formData,

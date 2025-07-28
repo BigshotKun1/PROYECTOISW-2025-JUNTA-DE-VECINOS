@@ -12,7 +12,7 @@ import '@styles/reuniondetalle.css';
 const Home = () => {
   const [reuniones, setReuniones] = useState([]);
   const columns = [
-    { title: 'Asunto',field: 'descripcion_reunion',width: 200},
+    { title: 'Asunto',field: 'descripcion_reunion',width: 300},
     { title: 'Fecha', field: 'fecha_reunion',width: 180},
     { title: 'Acta',field: 'acta_pdf',formatter: (cell) => {  
       const acta = cell.getValue();

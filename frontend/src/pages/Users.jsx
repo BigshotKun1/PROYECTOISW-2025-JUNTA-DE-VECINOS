@@ -64,8 +64,8 @@ const Users = () => {
   }, [setDataUser]);
   console.log(users)
   const columns = [
-    { title: "Nombre", field: "nombreCompleto", width: 300, responsive: 0 },
-    { title: "Correo electrónico", field: "email", width: 250, responsive: 3 },
+    { title: "Nombre", field: "nombreCompleto", width: 260, responsive: 0 },
+    { title: "Correo electrónico", field: "email", width: 200, responsive: 3 },
     { title: "Rut", field: "rut", width: 100, responsive: 2 },
     { title: "Rol", field: "rol", width: 160, responsive: 2 },
     { title: "Creado", field: "createdAt", width: 200, responsive: 2 },
@@ -73,7 +73,7 @@ const Users = () => {
     formatter: (cell) => {
       const certificado = cell.getValue();
       const { rut } = cell.getRow().getData();
-
+      console.log("RUT",rut)
       if (certificado) {
         return `
           <div style="display: flex; gap: 8px; justify-content: center;">
@@ -105,6 +105,7 @@ const Users = () => {
           console.log(result)
           if (result.isConfirmed) {
             //console.log("rut a enviar",rut)
+            console.log("RUT",rut)
             const [, err] = await deleteCertificado(rut);
             await fetchUsers(); 
             if (err) {
