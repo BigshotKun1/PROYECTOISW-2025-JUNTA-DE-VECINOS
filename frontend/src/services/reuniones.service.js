@@ -1,118 +1,104 @@
-import axios from './root.service.js';
-
+import axios from "./root.service.js";
 
 export async function getMeetingById(id) {
-    try {
-        const response = await axios.get(`meetings/${id}`);
+  try {
+    const response = await axios.get(`meetings/${id}`);
 
-        if (response?.data?.data) {
-            return response.data.data;
-        } else {
-            console.warn("La respuesta no contiene datos esperados:", response);
-            return null;
-        }
-    } catch (error) {
-        console.error("Error al obtener la reunión:", error);
-        return null;
+    if (response?.data?.data) {
+      return response.data.data;
+    } else {
+      console.warn("La respuesta no contiene datos esperados:", response);
+      return null;
     }
+  } catch (error) {
+    console.error("Error al obtener la reunión:", error);
+    return null;
+  }
 }
 
 export async function deleteMeetingById(id) {
-    try {
-        const response = await axios.delete(`meetings/${id}`);
+  try {
+    const response = await axios.delete(`meetings/${id}`);
 
-        if (response?.data?.data) {
-            return response.data.data;
-        } else {
-            console.warn("La respuesta no contiene datos esperados:", response);
-            return null;
-        }
-    } catch (error) {
-        console.error("Error al eliminar la reunión:", error);
-        return null;
+    if (response?.data?.data) {
+      return [response.data.data, null];
+    } else {
+      console.warn("La respuesta no contiene datos esperados:", response);
+      return [null, "Respuesta vacía o inesperada"];
     }
+  } catch (error) {
+    console.error("Error al eliminar la reunión:", error);
+    return [
+      null,
+      error?.response?.data?.message || error.message || "Error desconocido",
+    ];
+  }
 }
-
 export async function getAllReuniones() {
-    try {
-        const response = await axios.get('meetings/all');
-    
-        if (response?.data?.data) {
-        return response.data.data;
-        } else {
-            console.warn("La respuesta no contiene datos esperados:", response);
-            return [];
-        }
-    } catch (error) {
-        console.error("Error al obtener las reuniones:", error);
-        return [];
+  try {
+    const response = await axios.get("meetings/all");
+
+    if (response?.data?.data) {
+      return response.data.data;
+    } else {
+      console.warn("La respuesta no contiene datos esperados:", response);
+      return [];
     }
+  } catch (error) {
+    console.error("Error al obtener las reuniones:", error);
+    return [];
+  }
 }
 export async function createReuniones(reunion) {
-    try {
-
-        const response = await axios.post('meetings/', reunion);
-        return [response.data, null];
-    } catch (error) {
-        console.error('Error al crear reunion:', error);
-        return [null, error];
-    }
-}
-export async function updateEstadoReunion(id, nuevoEstado) {
   try {
-    const reunionActual = await getMeetingById(id);
+    const response = await axios.post("meetings/", reunion);
+    return [response.data, null];
+  } catch (error) {
+    //const mensajeError = error?.response?.details || error?.response?.message;
+    const mensajeError =
+      error?.response?.data?.details || error?.response?.data?.message;
+    return [
+      null,
+      { message: mensajeError || "Error al crear reunión", fullError: error },
+    ];
+  }
+}
 
-    const cuerpo = {
-      fecha_reunion: reunionActual.fecha_reunion,
-      descripcion: reunionActual.descripcion_reunion || reunionActual.descripcion, // por si viene como 'descripcion'
-      hora_inicio: reunionActual.hora_inicio.slice(0, 5),
-      hora_termino: reunionActual.hora_termino.slice(0, 5),
-      lugar_reunion: reunionActual.lugar_reunion,
-      id_estado: parseInt(nuevoEstado)
-    };
+export async function uploadActaToMeeting(id, file) {
+  try {
+    const formData = new FormData();
+    formData.append("acta", file);
 
-    console.log("🟡 Enviando PATCH con:", cuerpo);
+    const response = await axios.post(`meetings/${id}/upload-acta`, formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
 
-    const res = await axios.patch(`meetings/${id}`, cuerpo);
+    return [response.data, null];
+  } catch (error) {
+    console.error("Error al subir el acta:", error);
+    return [null, error];
+  }
+}
+
+export async function updateReunion(id, reunionActualizada) {
+  try {
+    const res = await axios.patch(`meetings/${id}`, reunionActualizada);
     return [res.data, null];
   } catch (err) {
-    console.error("❌ Error actualizando estado de la reunión:", err.response?.data || err);
+    console.error("Error actualizando estado de la reunión:", err);
     return [null, err];
   }
 }
 
-/*
-export async function updateEstadoReunion(id, reunionActualizada) {
-    try {
-        const res = await axios.patch(`meetings/${id}`, reunionActualizada);
-        return [res.data, null];
-    } catch (err) {
-        console.error("Error actualizando estado de la reunión:", err);
-        return [null, err];
-    }
+export async function deleteActa(id) {
+  try {
+    const response = await axios.patch(`/meetings/detail/${id}`);
+    console.log(response);
+    return [response.data, null];
+  } catch (error) {
+    console.log(error);
+    return [null, error];
+  }
 }
-    */
-/*
-export async function updateEstadoReunion(id, reunionNueva) {
-    try {
-        const reunionActual = await getMeetingById(id);
-        const fechaReunion = new Date(reunionActual.fecha_reunion)
-            .toISOString()
-            .split('T')[0]; 
-        const cuerpo = {
-            fecha_reunion: fechaReunion,
-            descripcion_reunion: reunionActual.descripcion_reunion || reunionActual.descripcion,
-            hora_inicio: reunionActual.hora_inicio.slice(0, 5),
-            hora_termino: reunionActual.hora_termino.slice(0, 5),
-            lugar_reunion: reunionActual.lugar_reunion,
-            id_estado: reunionNueva.estado?.id_estado
-        };
-        console.log("ID que estoy enviando al backend:", id);
-        const res = await axios.patch(`meetings/${id}`, cuerpo);
-        return [res.data, null];
-    } catch (err) {
-        console.error("❌ Error actualizando estado de la reunión:", err.response?.data || err);
-        return [null, err];
-    }
-}
-*/
