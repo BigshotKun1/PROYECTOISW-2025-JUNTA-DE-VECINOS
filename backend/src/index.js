@@ -18,6 +18,7 @@ import { passportJwtSetup } from "./auth/passport.auth.js";
 import path from "path";
 import { fileURLToPath } from "url";
 import { dirname } from "path";
+import "./cron-tasks.js"; 
 
 async function setupServer() {
   try {

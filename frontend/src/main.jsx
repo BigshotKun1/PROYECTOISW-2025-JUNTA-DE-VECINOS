@@ -16,6 +16,7 @@ import Votaciones from '@pages/Votaciones.jsx';
 import Eventos from './pages/Eventos';
 import Reuniones from './pages/Reuniones';
 import ReunionDetalle from './pages/ReunionesDetalle';
+import Directiva from './pages/Directiva.jsx';
 
 
 const router = createBrowserRouter([
@@ -27,6 +28,10 @@ const router = createBrowserRouter([
       {
         path: '/home',
         element: <Home />
+      },
+        {
+        path: '/directiva',
+        element: <Directiva />
       },
       {
         path: '/users',

@@ -138,7 +138,9 @@ const CalendarioEventos = ({ onEventoCreado }) => {
 
     if (onEventoCreado) onEventoCreado();
   } else {
-    Swal.fire({ icon: 'error', title: 'Error', text: '❌ No se pudo guardar el evento: ' + error });
+ const mensajeError = error.response?.data?.message || error.message || "Error desconocido";
+
+    Swal.fire({ icon: 'error', title: 'Error', text: mensajeError });
   }
 };
 
@@ -168,10 +170,11 @@ const CalendarioEventos = ({ onEventoCreado }) => {
         });
         if (onEventoCreado) onEventoCreado();
       } else {
+         const mensajeError = err.response?.data?.message || err.message || "Error desconocido";
         Swal.fire({
           icon: 'error',
           title: 'Error',
-          text: '❌ No se pudo eliminar el evento: ' + err.message
+          text: mensajeError
         });
       }
     }
