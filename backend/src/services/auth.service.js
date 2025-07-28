@@ -12,22 +12,28 @@ export async function loginService(user) {
 
     const createErrorMessage = (dataInfo, message) => ({
       dataInfo,
-      message
+      message,
     });
 
     const userFound = await userRepository.findOne({
       where: { email },
-      relations : ["rol"],
+      relations: ["rol"],
     });
 
     if (!userFound) {
-      return [null, createErrorMessage("email", "El correo electrónico es incorrecto")];
+      return [
+        null,
+        createErrorMessage("email", "El correo electrónico es incorrecto"),
+      ];
     }
 
     const isMatch = await comparePassword(password, userFound.password);
 
     if (!isMatch) {
-      return [null, createErrorMessage("password", "La contraseña es incorrecta")];
+      return [
+        null,
+        createErrorMessage("password", "La contraseña es incorrecta"),
+      ];
     }
 
     const payload = {
@@ -35,6 +41,7 @@ export async function loginService(user) {
       email: userFound.email,
       rut: userFound.rut,
       rol: userFound.rol.nombreRol,
+      certificadoResidencia_pdf: userFound.certificadoResidencia_pdf,
     };
 
     const accessToken = jwt.sign(payload, ACCESS_TOKEN_SECRET, {
@@ -48,7 +55,6 @@ export async function loginService(user) {
   }
 }
 
-
 export async function registerService(user) {
   try {
     const userRepository = AppDataSource.getRepository(User);
@@ -57,7 +63,7 @@ export async function registerService(user) {
 
     const createErrorMessage = (dataInfo, message) => ({
       dataInfo,
-      message
+      message,
     });
 
     const existingEmailUser = await userRepository.findOne({
@@ -65,8 +71,9 @@ export async function registerService(user) {
         email,
       },
     });
-    
-    if (existingEmailUser) return [null, createErrorMessage("email", "Correo electrónico en uso")];
+
+    if (existingEmailUser)
+      return [null, createErrorMessage("email", "Correo electrónico en uso")];
 
     const existingRutUser = await userRepository.findOne({
       where: {
@@ -74,7 +81,8 @@ export async function registerService(user) {
       },
     });
 
-    if (existingRutUser) return [null, createErrorMessage("rut", "Rut ya asociado a una cuenta")];
+    if (existingRutUser)
+      return [null, createErrorMessage("rut", "Rut ya asociado a una cuenta")];
 
     const newUser = userRepository.create({
       nombreCompleto,

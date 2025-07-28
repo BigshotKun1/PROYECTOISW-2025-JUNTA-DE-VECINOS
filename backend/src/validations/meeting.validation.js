@@ -17,7 +17,7 @@ const maxDate = new Date();
 maxDate.setMonth(maxDate.getMonth() + 6);
 export const meetingBodyValidation = Joi.object({
   fecha_reunion: Joi.date().min(hoy).less(maxDate).required().messages({
-    "date.min": "La fecha debe ser igual o posterior al día de hoy.",
+    "date.min": "No puedes agendar una reunión para hoy.",
     "date.less": "La fecha no puede ser superior a 6 meses. ",
     "any.required": "La fecha es obligatoria. ",
   }),

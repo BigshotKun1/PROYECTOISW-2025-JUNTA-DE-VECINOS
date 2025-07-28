@@ -1,28 +1,23 @@
 import { useState, useEffect } from "react";
 import { getHistorial } from "@services/asistencia.service.js";
 import '@styles/perfil.css';
-
+  var API_URL;
+  if(window.location.origin !="http://localhost:5173" ){
+      API_URL="http://146.83.198.35:1287"
+  }else{
+      API_URL="http://localhost:3000"
+  }
 const UserProfile = () => {
   const [user, setUser] = useState(null);
-  const [pdfFile, setPdfFile] = useState(null);
   const [mostrarModalHistorial, setMostrarModalHistorial] = useState(false);
-const [historialAsistencia, setHistorialAsistencia] = useState([]);
-
+  const [historialAsistencia, setHistorialAsistencia] = useState([]);
+  
   useEffect(() => {
     const userData = JSON.parse(sessionStorage.getItem('usuario'));
     setUser(userData);
   }, []);
 
     const autorizado =  user?.rol === "Presidente"|| user?.rol === "Tesorero"|| user?.rol === "Secretario" || user?.rol === "Vecino";
-  const handlePdfChange = (e) => {
-    const file = e.target.files[0];
-    if (file && file.type === "application/pdf") {
-      const pdfURL = URL.createObjectURL(file);
-      setPdfFile(pdfURL);
-    } else {
-      alert("Solo se permiten archivos PDF.");
-    }
-  };
 
   if (!user) return <p>Cargando perfil...</p>;
 
@@ -37,11 +32,11 @@ const [historialAsistencia, setHistorialAsistencia] = useState([]);
     console.error("Error al cargar historial:", error);
     alert("❌ No se pudo cargar el historial de asistencias.");
   }
-};
-
+  };
+  console.log("userData",user)
+  console.log("certificado de residencia",user.certificadoResidencia_pdf)
 
   return (
-    
     <div className="profile-container">
       <div className="profile-card">
         <img
@@ -50,16 +45,24 @@ const [historialAsistencia, setHistorialAsistencia] = useState([]);
           alt="Foto de perfil"
         />
         <div className="profile-details">
-          <h2>{user.nombreCompleto}</h2>
+          <h2>{user.nombreCompleto.toUpperCase()}</h2>
           <p><strong>RUT:</strong> {user.rut}</p>
           <p><strong>Email:</strong> {user.email}</p>
           <p><strong>Rol:</strong> {typeof user.rol === 'object' ? user.rol.nombreRol : user.rol}</p>
-
+          <p><strong>Certificado de Residencia:</strong></p>
+          {!user.certificadoResidencia_pdf ? (
+            <p style = {{color:"#FF0000"}}><strong>No cuentas con un certificado adjunto</strong></p>
+          ) : (
+            <div className="pdf-viewer">
+              <embed
+                src={`${API_URL}${user.certificadoResidencia_pdf}`}
+                type="application/pdf"
+                width="100%"
+                height="500px"
+              />
+            </div>
+          )}    
           {autorizado && (<button onClick={abrirModalHistorial} style={{ marginTop: "20px", padding: "8px 16px", background: "#003366", color: "white", border: "none", borderRadius: "5px", cursor: "pointer"}}>Ver historial de asistencia</button>)}
-          <div className="upload-section">
-            <label htmlFor="pdfUpload"><strong>Subir documento PDF:</strong></label>
-            <input type="file" accept="application/pdf" onChange={handlePdfChange} id="pdfUpload"/>
-          </div>
           {mostrarModalHistorial && (
         <div className="modal-overlay"> 
           <div className="modal-content">
@@ -93,12 +96,6 @@ const [historialAsistencia, setHistorialAsistencia] = useState([]);
         </div>
       </div>
       )}
-          {pdfFile && (
-          <div className="pdf-viewer">
-
-              <embed src={pdfFile} type="application/pdf" width="100%" height="400px" />
-            </div>
-          )}
         </div>
       </div>
     </div>

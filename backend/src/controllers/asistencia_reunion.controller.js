@@ -76,10 +76,10 @@ export async function getEstadisticasAsistencia(req, res) {
 }
 
 export async function getHistorialDeAsistencia(req, res) {
-  console.log("Get historial controller");
+  //console.log("Get historial controller");
   const rut = req.params.rut;
   const [data, error] = await getHistorialDeAsistenciaService(rut);
-  console.log("data", data);
+  //console.log("data", data);
   if (error) return res.status(500).json({ message: error });
   return res.json(data);
 }

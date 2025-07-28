@@ -54,8 +54,13 @@ export async function createReuniones(reunion) {
     const response = await axios.post("meetings/", reunion);
     return [response.data, null];
   } catch (error) {
-    console.error("Error al crear reunion:", error);
-    return [null, error];
+    //const mensajeError = error?.response?.details || error?.response?.message;
+    const mensajeError =
+      error?.response?.data?.details || error?.response?.data?.message;
+    return [
+      null,
+      { message: mensajeError || "Error al crear reunión", fullError: error },
+    ];
   }
 }
 
@@ -84,5 +89,16 @@ export async function updateReunion(id, reunionActualizada) {
   } catch (err) {
     console.error("Error actualizando estado de la reunión:", err);
     return [null, err];
+  }
+}
+
+export async function deleteActa(id) {
+  try {
+    const response = await axios.patch(`/meetings/detail/${id}`);
+    console.log(response);
+    return [response.data, null];
+  } catch (error) {
+    console.log(error);
+    return [null, error];
   }
 }
