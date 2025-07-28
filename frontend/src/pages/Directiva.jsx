@@ -59,7 +59,7 @@ const DirectivaPage = () => {
     { title: "Rol", field: "rol.nombreRol", width: 200, responsive: 2 },
     { title: "Inicio Periodo", field: "periodo.fechaInicio", width: 200, responsive: 2 },
     { title: "Fin Periodo", field: "periodo.fechaTermino", width: 200, responsive: 2 },
-     {
+    {
       title: "¿Periodo Activo?",
       field: "periodo",
       formatter: (cell) => {

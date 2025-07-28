@@ -119,7 +119,7 @@ function VotacionesTable() {
                 >
                   <td>{v.titulo_votacion}</td>
                   <td>{v.descripcion_votacion}</td>
-                  <td>{new Date(v.fecha_votacion).toLocaleDateString()}</td>
+                  <td>{v.fecha_votacion}</td>
                   <td>{v.hora_inicio}</td>
                   <td>{v.hora_termino}</td>
                 </tr>

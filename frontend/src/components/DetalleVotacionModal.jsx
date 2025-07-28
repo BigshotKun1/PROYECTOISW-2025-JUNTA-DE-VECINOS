@@ -72,10 +72,12 @@ const DetalleVotacionModal = ({ votacion, abierta, onClose, onEliminar }) => {
       <div className="modal-votacion">
         <button className="cerrar-btn" onClick={onClose}>✖</button>
         <div style={{ marginBottom: "0.5em", fontWeight: "bold", color: "#1976d2" }}>
-          {new Date(votacion.fecha_votacion).toLocaleDateString()} | Inicio: {votacion.hora_inicio} | Término: {votacion.hora_termino}
+          {votacion.fecha_votacion} | Inicio: {votacion.hora_inicio} | Término: {votacion.hora_termino}
         </div>
+        <div style={{ marginTop: "20px",justifyContent: "center",display:"grid",alignItems: "center", gap: "8px"}}>
         <h3 className="modal-titulo">{votacion.titulo_votacion}</h3>
         <p style={{ marginBottom: "1em", color: "#444" }}>{votacion.descripcion_votacion}</p>
+        </div>
         {votacionNoIniciada ? (
           <div style={{ margin: "2em 0", textAlign: "center", color: "#888", fontWeight: "bold" }}>
             Esta votación todavía no ha empezado

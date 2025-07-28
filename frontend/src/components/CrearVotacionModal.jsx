@@ -36,7 +36,7 @@ const CrearVotacionModal = ({ open, onClose, onConfirm }) => {
     e.preventDefault();
     setShowConfirm(true);
   };
-
+console.log("FECHA VOTACION",form.fecha_votacion)
   const handleConfirmYes = async () => {
     const usuario = JSON.parse(sessionStorage.getItem('usuario'));
     await onConfirm({

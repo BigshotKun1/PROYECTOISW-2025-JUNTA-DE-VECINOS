@@ -34,6 +34,7 @@ export async function createVotacionService({
       opciones, // <-- guarda el array directamente
     });
 
+    console.log("NUEVA VOTACION", nuevaVotacion.fecha_votacion);
     const guardado = await votacionRepo.save(nuevaVotacion);
 
     return [guardado, null];
