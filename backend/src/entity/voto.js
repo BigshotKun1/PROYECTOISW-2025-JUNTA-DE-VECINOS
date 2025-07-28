@@ -14,11 +14,11 @@ const Voto = new EntitySchema({
       type: "int",
       nullable: false,
     },
-    id_opcion_voto: {
+    id_votacion: {
       type: "int",
       nullable: false,
     },
-    id_votacion: {
+    opcion_index: { // <-- índice de la opción elegida
       type: "int",
       nullable: false,
     },
@@ -28,20 +28,20 @@ const Voto = new EntitySchema({
     },
   },
   relations: {
-    opcionVoto: {
-      target: "OpcionesVoto",
-      type: "many-to-one",
-      joinColumn: {
-        name: "id_opcion_voto",
-        referencedColumnName: "id_opcion_voto",
-      },
-    },
     votacion: {
       target: "Votaciones",
       type: "many-to-one",
       joinColumn: {
         name: "id_votacion",
         referencedColumnName: "id_votacion",
+      },
+    },
+    usuario: {
+      target: "User",
+      type: "many-to-one",
+      joinColumn: {
+        name: "id_usuario",
+        referencedColumnName: "id_usuario",
       },
     },
   },

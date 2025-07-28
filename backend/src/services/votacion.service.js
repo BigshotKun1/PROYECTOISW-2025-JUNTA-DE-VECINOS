@@ -1,12 +1,19 @@
 import { AppDataSource } from "../config/configDb.js";
 import Votaciones from "../entity/Votacion.js";
 
-export async function createVotacionService({ titulo_votacion, descripcion_votacion, fecha_votacion,  hora_inicio, hora_termino, id_usuario }) {
+export async function createVotacionService({
+  titulo_votacion,
+  descripcion_votacion,
+  fecha_votacion,
+  hora_inicio,
+  hora_termino,
+  id_usuario,
+  opciones,
+}) {
   try {
     const votacionRepo = AppDataSource.getRepository(Votaciones);
     const miembroRepo = AppDataSource.getRepository("DirectivaMiembro");
 
-    // Verificar si el usuario es parte de alguna directiva activa
     const miembro = await miembroRepo.findOne({
       where: { id_usuario },
       relations: ["periodo"],
@@ -24,9 +31,12 @@ export async function createVotacionService({ titulo_votacion, descripcion_votac
       hora_termino,
       usuario: { id_usuario },
       periodo: { id_periodo: miembro.periodo.id_periodo },
+      opciones, // <-- guarda el array directamente
     });
 
+    console.log("NUEVA VOTACION", nuevaVotacion.fecha_votacion);
     const guardado = await votacionRepo.save(nuevaVotacion);
+
     return [guardado, null];
   } catch (error) {
     return [null, error.message];
@@ -37,14 +47,13 @@ export async function deleteVotacionService({ id_votacion }) {
   try {
     const votacionRepo = AppDataSource.getRepository(Votaciones);
 
-    // Buscar el evento por ID
+    // Buscar la votación por ID
     const votacion = await votacionRepo.findOne({ where: { id_votacion } });
 
     if (!votacion) {
-      return [null, "Votacion no encontrada"];
+      return [null, "Votación no encontrada"];
     }
 
-    // Eliminar la votacion
     await votacionRepo.remove(votacion);
     return [votacion, null];
   } catch (error) {
@@ -78,7 +87,7 @@ export async function obtenerTodasLasVotaciones() {
     const votacionRepo = AppDataSource.getRepository(Votaciones);
     return await votacionRepo.find({
       relations: ["usuario", "periodo", "votos"], // ajusta según tus relaciones
-      order: { fecha_votacion: "DESC" }
+      order: { fecha_votacion: "DESC", hora_inicio: "DESC" },
     });
   } catch (error) {
     throw error;

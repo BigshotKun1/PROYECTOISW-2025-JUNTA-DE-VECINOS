@@ -23,12 +23,16 @@ export async function isAdmin(req, res, next) {
       );
     }
 
-    if (!userFound.rol || userFound.rol.nombreRol !== "Administrador" && userFound.rol.nombreRol !== "administrador") {
+    if (
+      !userFound.rol ||
+      (userFound.rol.nombreRol !== "Administrador" &&
+        userFound.rol.nombreRol !== "administrador")
+    ) {
       return handleErrorClient(
         res,
         403,
         "Error al acceder al recurso",
-        "Se requiere un rol de administrador para realizar esta acción."
+        "Se requiere un rol de administrador para realizar esta acción.",
       );
     }
 
@@ -49,13 +53,17 @@ export async function isAdminyDirectiva(req, res, next) {
     });
 
     if (!userFound) {
-      return handleErrorClient(res, 404, "Usuario no encontrado en la base de datos");
+      return handleErrorClient(
+        res,
+        404,
+        "Usuario no encontrado en la base de datos",
+      );
     }
 
     const rolUsuario = userFound.rol?.nombreRol?.toLowerCase();
 
     // ✅ Si es administrador, permite el acceso directamente
-    if (rolUsuario === "administrador") {
+    if (rolUsuario === "Administrador") {
       return next();
     }
 
@@ -70,23 +78,27 @@ export async function isAdminyDirectiva(req, res, next) {
       .andWhere("periodo.fechaTermino >= :hoy", { hoy })
       .getOne();
 
+    console.log("MIEMBRO VIGENTE", miembroVigente);
     if (!miembroVigente) {
       return handleErrorClient(res, 403, "No pertenece a una directiva activa");
     }
 
     // ✅ Verificar si su rol dentro de la directiva es válido
-    const rolDirectiva = await miembroVigente.rol?.nombreRol?.toLowerCase();
-    const rolesPermitidos = ["Presidente", "Tesorero", "Secretario"];
-
+    const rolDirectiva = await miembroVigente.id_rol;
+    //const rolesPermitidos = ["Presidente", "Tesorero", "Secretario"];
+    const rolesPermitidos = [2, 4, 5];
+    console.log("ROL DIRECTIVA", rolDirectiva);
+    console.log("ROLES PERMITIDOS", rolesPermitidos);
     if (!rolesPermitidos.includes(rolDirectiva)) {
-      return handleErrorClient(res, 403, "Rol dentro de la directiva no autorizado");
+      return handleErrorClient(
+        res,
+        403,
+        "Rol dentro de la directiva no autorizado",
+      );
     }
 
     next();
-
   } catch (error) {
-    
     return handleErrorServer(res, 500, error.message);
-
   }
 }

@@ -12,7 +12,7 @@ import '@styles/reuniondetalle.css';
 const Home = () => {
   const [reuniones, setReuniones] = useState([]);
   const columns = [
-    { title: 'Asunto',field: 'descripcion_reunion',width: 450},
+    { title: 'Asunto',field: 'descripcion_reunion',width: 200},
     { title: 'Fecha', field: 'fecha_reunion',width: 180},
     { title: 'Acta',field: 'acta_pdf',formatter: (cell) => {  
       const acta = cell.getValue();
@@ -44,24 +44,31 @@ const Home = () => {
   }, []);
 
   return (
-    <div  style={{ maxWWidth:"800px",margin: "2rem auto",padding: "2rem", backgroundColor:"#fefefe",borderRadius:"12px",boxShadow:"0 4px 12px rgba(0, 0, 0, 0.1)", fontFamily: "'Segoe UI', sansSerif"}}>
-    <div className='main-container'>
-      <div style={{  width:"90%", maxWidth:"970px", margin: "0 auto"}}>
-        <div className='top-table'>
-          <h1 className='title-table'>Reuniones</h1>
-        </div>  
-        <Table  
-          data={reuniones}
-          columns={columns}
-          filter={false}
-          dataToFilter={[]} 
-          initialSortName="fecha_reunion"
-          onSelectionChange={() => {}}
-        />
-      </div>  
+  <div className="reunion-detalle-contenedor">
+    <div style={{
+      maxWidth: "800px",
+      width: "100%",
+      padding: "2rem",
+      backgroundColor: "rgba(255, 255, 255, 0.8)",
+      borderRadius: "12px",
+      boxShadow: "0 4px 12px rgba(0, 0, 0, 0.1)",
+      fontFamily: "'Segoe UI', sans-serif"
+    }}>
+      <h1 className="title-table">Reuniones</h1>
+      <Table  
+        data={reuniones}
+        columns={columns}
+        filter={false}
+        dataToFilter={[]} 
+        initialSortName="fecha_reunion"
+        onSelectionChange={() => {}}
+      />
     </div>
-    </div>
-  );
+  </div>
+);
+
+
+
 };
 
 export default Home;
