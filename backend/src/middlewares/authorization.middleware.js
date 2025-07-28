@@ -63,7 +63,7 @@ export async function isAdminyDirectiva(req, res, next) {
     const rolUsuario = userFound.rol?.nombreRol?.toLowerCase();
 
     // ✅ Si es administrador, permite el acceso directamente
-    if (rolUsuario === "administrador") {
+    if (rolUsuario === "Administrador") {
       return next();
     }
 

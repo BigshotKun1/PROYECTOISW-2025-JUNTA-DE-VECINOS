@@ -4,7 +4,7 @@ import DirectivaMiembro from "./entity/DirectivaMiembros.js";
 import  User  from "./entity/user.entity.js";
 import  Rol  from "./entity/rol.js";
 
-cron.schedule("* * * * *", async () => {
+cron.schedule("0 0 * * *", async () => {
   console.log("⏰ Ejecutando tarea para revisar directivas expiradas...");
   const today = new Date();
 

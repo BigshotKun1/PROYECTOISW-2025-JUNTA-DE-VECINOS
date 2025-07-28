@@ -59,19 +59,19 @@ const CalendarioEventos = ({ onEventoCreado }) => {
   const handleDateClick = (info) => {
   if (user?.rol === "Vecino") return; // ❌ Bloquear vecinos
 
-  const hoy = new Date();
-  hoy.setHours(0, 0, 0, 0);
-  const fechaClickeada = new Date(info.dateStr);
-  fechaClickeada.setHours(0, 0, 0, 0);
+const hoy = new Date().toISOString().split('T')[0]; // "2025-07-28"
+const fechaClickeada = info.dateStr; // "2025-07-28"
 
-  if (fechaClickeada < hoy) {
-    Swal.fire({
-      icon: 'warning',
-      title: 'Fecha inválida',
-      text: 'No puedes crear eventos en fechas pasadas.',
-    });
-    return;
-  }
+if (fechaClickeada < hoy) {
+  Swal.fire({
+    icon: 'warning',
+    title: 'Fecha inválida',
+    text: 'No puedes crear eventos en fechas pasadas.',
+  });
+  return;
+}
+
+
 
   setFechaSeleccionada(info.dateStr);
   setModoEdicion(false);
