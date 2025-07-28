@@ -61,15 +61,15 @@ export async function isAdminyDirectiva(req, res, next) {
     }
 
     const rolUsuario = userFound.rol?.nombreRol?.toLowerCase();
-
+    console.log("ROL USUARIO", rolUsuario);
     // ✅ Si es administrador, permite el acceso directamente
-    if (rolUsuario === "Administrador") {
+    if (rolUsuario === "administrador") {
       return next();
     }
 
     // ✅ Verificar si pertenece a una directiva activa
     const hoy = new Date();
-
+    console.log("USUARIO:", userFound);
     const miembroVigente = await directivaMiembroRepo
       .createQueryBuilder("miembro")
       .leftJoinAndSelect("miembro.periodo", "periodo")

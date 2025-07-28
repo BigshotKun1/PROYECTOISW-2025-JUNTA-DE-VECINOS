@@ -15,6 +15,9 @@ import { uploadCertificado, deleteCertificado } from '../services/user.service';
 import CrearUsuario from '../components/CrearUsuario.jsx';
 import { crearUsuarioService, getUsers } from '../services/user.service.js';
 import { get } from 'react-hook-form';
+import { Link } from "react-router-dom";
+
+
 
   var API_URL;
   if(window.location.origin !="http://localhost:5173" ){
@@ -53,14 +56,16 @@ const Users = () => {
   }
 };
 
+   const user = JSON.parse(sessionStorage.getItem("usuario"))
+    const isAdmin = user?.rol === "Administrador";
 
   const handleSelectionChange = useCallback((selectedUsers) => {
     setDataUser(selectedUsers);
   }, [setDataUser]);
   console.log(users)
   const columns = [
-    { title: "Nombre", field: "nombreCompleto", width: 300, responsive: 0 },
-    { title: "Correo electrónico", field: "email", width: 250, responsive: 3 },
+    { title: "Nombre", field: "nombreCompleto", width: 260, responsive: 0 },
+    { title: "Correo electrónico", field: "email", width: 200, responsive: 3 },
     { title: "Rut", field: "rut", width: 100, responsive: 2 },
     { title: "Rol", field: "rol", width: 160, responsive: 2 },
     { title: "Creado", field: "createdAt", width: 200, responsive: 2 },
@@ -68,7 +73,7 @@ const Users = () => {
     formatter: (cell) => {
       const certificado = cell.getValue();
       const { rut } = cell.getRow().getData();
-
+      console.log("RUT",rut)
       if (certificado) {
         return `
           <div style="display: flex; gap: 8px; justify-content: center;">
@@ -100,6 +105,7 @@ const Users = () => {
           console.log(result)
           if (result.isConfirmed) {
             //console.log("rut a enviar",rut)
+            console.log("RUT",rut)
             const [, err] = await deleteCertificado(rut);
             await fetchUsers(); 
             if (err) {
@@ -168,6 +174,11 @@ const Users = () => {
       <div className='table-container'>
         <div className='top-table'>
           <h1 className='title-table'>Usuarios</h1>
+            {isAdmin &&(
+            <Link to={`/directiva`}>
+              <h1 className='title-table'>Directivas</h1>
+            </Link>
+            )}
           <div className='filter-actions'>
             <Search value={filterRut} onChange={handleRutFilterChange} placeholder={'Filtrar por rut'} />
             <button className="create-user-button" onClick={() => setShowCrearUsuario(true)}>
