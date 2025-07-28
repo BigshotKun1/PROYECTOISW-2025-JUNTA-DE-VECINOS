@@ -16,3 +16,29 @@ body {
 	min-height: 100vh;
 	margin: 0 auto;
 }
+body::before {
+  content: "";
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: url(../assets/fondo.jpg);
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  z-index: -2;
+  filter: brightness(0.5) blur(2px); /* oscurece y suaviza */
+}
+
+body::after {
+  content: "";
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.027); /* capa semitransparente para oscurecer más */
+  z-index: -1;
+}
