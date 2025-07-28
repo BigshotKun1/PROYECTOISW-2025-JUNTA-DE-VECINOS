@@ -5,7 +5,13 @@
     align-items: center;
     height: 100vh;
     width: 100%;
+    max-width: 800px;
+    margin: 2rem auto;
+    padding: 2rem;
+    background-color: rgba(255, 255, 255, 0.8);
+
 }
+
 
 .table-container {
     width: 90%;
@@ -88,4 +94,25 @@
     .delete-user-button {
         margin-right: 35px;
     }
+}
+
+.popup-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.4);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.popup-content {
+  background: white;
+  padding: 2rem;
+  border-radius: 12px;
+  width: 400px;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.2);
 }

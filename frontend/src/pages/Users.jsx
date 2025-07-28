@@ -12,6 +12,9 @@ import useEditUser from '@hooks/users/useEditUser';
 import useDeleteUser from '@hooks/users/useDeleteUser';
 import { showSuccessAlert, deleteDataAlert, showErrorAlert } from "@helpers/sweetAlert.js";
 import { uploadCertificado, deleteCertificado } from '../services/user.service';
+import CrearUsuario from '../components/CrearUsuario.jsx';
+import { crearUsuarioService, getUsers } from '../services/user.service.js';
+import { get } from 'react-hook-form';
 import { Link } from "react-router-dom";
 
 
@@ -37,10 +40,21 @@ const Users = () => {
   } = useEditUser(setUsers);
 
   const { handleDelete } = useDeleteUser(fetchUsers, setDataUser);
+  const [showCrearUsuario, setShowCrearUsuario] = useState(false);
+
 
   const handleRutFilterChange = (e) => {
     setFilterRut(e.target.value);
   };
+
+ const handleCreateUser = async (nuevoUsuario) => {
+  try {
+    await crearUsuarioService(nuevoUsuario);
+    getUsers();
+  } catch (error) {
+    console.error('Error al crear usuario:', error);
+  }
+};
 
    const user = JSON.parse(sessionStorage.getItem("usuario"))
     const isAdmin = user?.rol === "Administrador";
@@ -166,6 +180,10 @@ const Users = () => {
             )}
           <div className='filter-actions'>
             <Search value={filterRut} onChange={handleRutFilterChange} placeholder={'Filtrar por rut'} />
+            <button className="create-user-button" onClick={() => setShowCrearUsuario(true)}>
+  <span style={{ fontSize: '24px', fontWeight: 'bold' }}>+</span>
+</button>
+
             <button onClick={handleClickUpdate} disabled={dataUser.length === 0}>
               {dataUser.length === 0 ? (
                 <img src={UpdateIconDisable} alt="edit-disabled" />
@@ -191,7 +209,12 @@ const Users = () => {
           onSelectionChange={handleSelectionChange}
         />
       </div>
-      <Popup show={isPopupOpen} setShow={setIsPopupOpen} data={dataUser} action={handleUpdate} />
+      {showCrearUsuario && (
+  <CrearUsuario
+    onCreate={handleCreateUser}
+    onClose={() => setShowCrearUsuario(false)}
+  />
+)}
     </div>
   );
 };
