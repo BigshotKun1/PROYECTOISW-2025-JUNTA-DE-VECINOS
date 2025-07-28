@@ -72,3 +72,13 @@ export async function deleteCertificado(rut) {
     return [null, error];
   }
 }
+
+export async function crearUsuarioService(userData) {
+  try {
+    const response = await axios.post("/user/", userData);
+    return response.data;
+  } catch (error) {
+    console.error("Error al crear usuario:", error);
+    throw error.response.data;
+  }
+}
