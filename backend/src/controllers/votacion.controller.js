@@ -10,6 +10,7 @@ import { notifyVecinosVotaciones } from "../services/email.service.js";
 export async function crearVotacion(req, res) {
   try {
     const { body } = req;
+    const id_usuario = req.user.id_usuario; // <-- lo toma del usuario autenticado
 
     // Validación con Joi
     const { error } = votacionCreacionValidation.validate(body, { abortEarly: false });
@@ -22,11 +23,10 @@ export async function crearVotacion(req, res) {
       );
     }
 
-    if (!body.opciones || !Array.isArray(body.opciones) || body.opciones.length < 2) {
-      return handleErrorClient(res, 400, "Debes ingresar al menos 2 opciones para la votación");
-    }
-
-    const [nuevaVotacion, errorVotacion] = await createVotacionService(body);
+    const [nuevaVotacion, errorVotacion] = await createVotacionService({
+      ...body,
+      id_usuario // <-- lo agrega aquí
+    });
 
     if (errorVotacion) {
       return handleErrorClient(res, 400, "Error al crear votación", errorVotacion);
@@ -40,21 +40,6 @@ export async function crearVotacion(req, res) {
   }
 }
 
-export const obtenerVotacionPorIdController = async (req, res) => {
-  try {
-    const { id } = req.params;
-    const votacion = await obtenerVotacionPorId(id);
-
-    res.status(200).json({
-      message: "Votación obtenida exitosamente",
-      votacion,
-    });
-  } catch (error) {
-    console.error("Error al obtener la votación por ID:", error);
-    res.status(error.status || 500).json({ message: error.message || "Error interno del servidor" });
-  }
-};
-
 export const eliminarVotacion = async (req, res) => {
   try {
     const { id_votacion } = req.params || {}; // Evita que falle si req.params es undefined
@@ -64,7 +49,7 @@ export const eliminarVotacion = async (req, res) => {
     }
 
     // Aquí llamarías a tu servicio para eliminar la votación
-    const [resultado, error] = await deleteVotacionService(id_votacion);
+    const [resultado, error] = await deleteVotacionService({ id_votacion });
 
     if (error) {
       return res.status(400).json({ status: "Client error", message: error });

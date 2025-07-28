@@ -1,7 +1,9 @@
 import { useEffect, useState } from 'react';
 import '@styles/VotacionesTable.css';
 import CrearVotacionModal from './CrearVotacionModal';
-import { getVotaciones, crearVotacion } from '@services/votaciones.service.js';
+// Importa tu modal de detalle (deberás crearlo)
+import DetalleVotacionModal from './DetalleVotacionModal';
+import { getVotaciones, crearVotacion, eliminarVotacion } from '@services/votaciones.service.js';
 
 function VotacionesTable() {
   const [votaciones, setVotaciones] = useState([]);
@@ -9,6 +11,9 @@ function VotacionesTable() {
   const [modalAbierto, setModalAbierto] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  // Paso 1: Estado para detalle
+  const [votacionSeleccionada, setVotacionSeleccionada] = useState(null);
+  const [detalleAbierto, setDetalleAbierto] = useState(false);
 
   useEffect(() => {
     const fetchVotaciones = async () => {
@@ -45,6 +50,32 @@ function VotacionesTable() {
     }
   };
 
+  const handleEliminarVotacion = async (id_votacion) => {
+  if (window.confirm("¿Seguro que deseas eliminar esta votación?")) {
+    console.log("Eliminando votación:", id_votacion);
+    try {
+      await eliminarVotacion(id_votacion);
+      setDetalleAbierto(false);
+      setLoading(true);
+      const data = await getVotaciones();
+      setVotaciones(data);
+      setLoading(false);
+      console.log("Votación eliminada");
+    } catch (error) {
+      alert("Error al eliminar la votación");
+      console.error(error);
+    }
+  }
+};
+
+  // Paso 2: Función para saber si la votación está activa
+  function estaActiva(votacion) {
+    const ahora = new Date();
+    const inicio = new Date(`${votacion.fecha_votacion}T${votacion.hora_inicio}`);
+    const termino = new Date(`${votacion.fecha_votacion}T${votacion.hora_termino}`);
+    return ahora >= inicio && ahora <= termino;
+  }
+
   return (
     <div className="votaciones-table-container">
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -77,7 +108,15 @@ function VotacionesTable() {
               </tr>
             ) : (
               votaciones.map(v => (
-                <tr key={v.id_votacion}>
+                // Paso 3: Fila clickeable
+                <tr
+                  key={v.id_votacion}
+                  style={{ cursor: "pointer" }}
+                  onClick={() => {
+                    setVotacionSeleccionada(v);
+                    setDetalleAbierto(true);
+                  }}
+                >
                   <td>{v.titulo_votacion}</td>
                   <td>{v.descripcion_votacion}</td>
                   <td>{new Date(v.fecha_votacion).toLocaleDateString()}</td>
@@ -94,6 +133,15 @@ function VotacionesTable() {
         onClose={() => setModalAbierto(false)}
         onConfirm={handleConfirmar}
       />
+      {/* Modal de detalle */}
+      {detalleAbierto && votacionSeleccionada && (
+        <DetalleVotacionModal
+          votacion={votacionSeleccionada}
+          abierta={estaActiva(votacionSeleccionada)}
+          onClose={() => setDetalleAbierto(false)}
+          onEliminar={handleEliminarVotacion}
+        />
+      )}
     </div>
   );
 }

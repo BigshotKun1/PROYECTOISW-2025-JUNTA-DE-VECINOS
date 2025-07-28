@@ -1,6 +1,5 @@
 import { AppDataSource } from "../config/configDb.js";
 import Votaciones from "../entity/Votacion.js";
-import OpcionesVotoE from "../entity/OpcionesVotoE.js";
 
 export async function createVotacionService({
   titulo_votacion,
@@ -9,14 +8,12 @@ export async function createVotacionService({
   hora_inicio,
   hora_termino,
   id_usuario,
-  opciones // <-- recibe el array de opciones
+  opciones
 }) {
   try {
     const votacionRepo = AppDataSource.getRepository(Votaciones);
     const miembroRepo = AppDataSource.getRepository("DirectivaMiembro");
-    const opcionesRepo = AppDataSource.getRepository(OpcionesVotoE);
 
-    // Verificar si el usuario es parte de alguna directiva activa
     const miembro = await miembroRepo.findOne({
       where: { id_usuario },
       relations: ["periodo"],
@@ -24,11 +21,6 @@ export async function createVotacionService({
 
     if (!miembro) {
       return [null, "Solo miembros de la directiva pueden crear votaciones"];
-    }
-
-    // Validar mínimo 2 opciones
-    if (!Array.isArray(opciones) || opciones.length < 2) {
-      return [null, "Debes ingresar al menos 2 opciones para la votación"];
     }
 
     const nuevaVotacion = votacionRepo.create({
@@ -39,18 +31,10 @@ export async function createVotacionService({
       hora_termino,
       usuario: { id_usuario },
       periodo: { id_periodo: miembro.periodo.id_periodo },
+      opciones // <-- guarda el array directamente
     });
 
     const guardado = await votacionRepo.save(nuevaVotacion);
-
-    // Guardar las opciones asociadas a la votación
-    for (const texto_opcion of opciones) {
-      const opcion = opcionesRepo.create({
-        texto_opcion,
-        votacion: guardado // asumiendo relación ManyToOne
-      });
-      await opcionesRepo.save(opcion);
-    }
 
     return [guardado, null];
   } catch (error) {
@@ -62,14 +46,13 @@ export async function deleteVotacionService({ id_votacion }) {
   try {
     const votacionRepo = AppDataSource.getRepository(Votaciones);
 
-    // Buscar el evento por ID
+    // Buscar la votación por ID
     const votacion = await votacionRepo.findOne({ where: { id_votacion } });
 
     if (!votacion) {
       return [null, "Votación no encontrada"];
     }
 
-    // Eliminar el evento
     await votacionRepo.remove(votacion);
     return [votacion, null];
   } catch (error) {
@@ -103,7 +86,7 @@ export async function obtenerTodasLasVotaciones() {
     const votacionRepo = AppDataSource.getRepository(Votaciones);
     return await votacionRepo.find({
       relations: ["usuario", "periodo", "votos"], // ajusta según tus relaciones
-      order: { fecha_votacion: "DESC" }
+      order: { fecha_votacion: "DESC", hora_inicio: "DESC" }
     });
   } catch (error) {
     throw error;

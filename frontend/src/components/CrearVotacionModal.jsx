@@ -8,9 +8,10 @@ const CrearVotacionModal = ({ open, onClose, onConfirm }) => {
     fecha_votacion: "",
     hora_inicio: "",
     hora_termino: "",
-    opciones: [""]
+    opciones: ["Si", "No"]
   });
   const [showConfirm, setShowConfirm] = useState(false);
+  const [successMsg, setSuccessMsg] = useState("");
 
   const handleChange = e => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -32,27 +33,29 @@ const CrearVotacionModal = ({ open, onClose, onConfirm }) => {
   };
 
   const handleSubmit = e => {
-  e.preventDefault();
-  if (form.opciones.filter(op => op.trim() !== '').length < 2) {
-    alert("Debes ingresar al menos 2 opciones para la votación.");
-    return;
-  }
-  
-  setShowConfirm(true);
-};
-  const handleConfirmYes = () => {
-    onConfirm(form);
+    e.preventDefault();
+    setShowConfirm(true);
+  };
+
+  const handleConfirmYes = async () => {
+    const usuario = JSON.parse(sessionStorage.getItem('usuario'));
+    await onConfirm({
+      ...form,
+      // id_usuario: usuario?.id_usuario // ya no se envía si el backend lo toma del JWT
+    });
     setForm({
       titulo_votacion: "",
       descripcion_votacion: "",
       fecha_votacion: "",
       hora_inicio: "",
       hora_termino: "",
-      opciones: [""]
+      opciones: ["", ""]
     });
     setShowConfirm(false);
+    setSuccessMsg("Votación creada exitosamente ✔"); // <-- muestra el mensaje
+    setTimeout(() => setSuccessMsg(""), 2500); // <-- oculta el mensaje después de 2.5s
   };
-  
+
   const handleConfirmNo = () => {
     setShowConfirm(false);
   };
@@ -62,6 +65,20 @@ const CrearVotacionModal = ({ open, onClose, onConfirm }) => {
   return (
     <div className="modal-overlay">
       <div className="modal-votacion">
+        {/* Mensaje de éxito */}
+        {successMsg && (
+          <div style={{
+            background: "#e6ffe6",
+            color: "#2e7d32",
+            padding: "0.7em 1em",
+            borderRadius: "6px",
+            marginBottom: "1em",
+            fontWeight: "bold",
+            textAlign: "center"
+          }}>
+            {successMsg}
+          </div>
+        )}
         <button className="cerrar-btn" onClick={onClose}>✖</button>
         <h3 className="modal-titulo">Crear nueva votación</h3>
         <form onSubmit={handleSubmit}>
@@ -141,7 +158,6 @@ const CrearVotacionModal = ({ open, onClose, onConfirm }) => {
             <button type="button" className="btn btn-danger" onClick={onClose}>Cancelar</button>
           </div>
         </form>
-            
         {/* Cuadro de advertencia */}
         {showConfirm && (
           <div className="modal-advertencia">
