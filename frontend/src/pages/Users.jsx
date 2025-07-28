@@ -12,6 +12,9 @@ import useEditUser from '@hooks/users/useEditUser';
 import useDeleteUser from '@hooks/users/useDeleteUser';
 import { showSuccessAlert, deleteDataAlert, showErrorAlert } from "@helpers/sweetAlert.js";
 import { uploadCertificado, deleteCertificado } from '../services/user.service';
+import { Link } from "react-router-dom";
+
+
 
   var API_URL;
   if(window.location.origin !="http://localhost:5173" ){
@@ -38,6 +41,9 @@ const Users = () => {
   const handleRutFilterChange = (e) => {
     setFilterRut(e.target.value);
   };
+
+   const user = JSON.parse(sessionStorage.getItem("usuario"))
+    const isAdmin = user?.rol === "Administrador";
 
   const handleSelectionChange = useCallback((selectedUsers) => {
     setDataUser(selectedUsers);
@@ -153,6 +159,11 @@ const Users = () => {
       <div className='table-container'>
         <div className='top-table'>
           <h1 className='title-table'>Usuarios</h1>
+            {isAdmin &&(
+            <Link to={`/directiva`}>
+              <h1 className='title-table'>Directivas</h1>
+            </Link>
+            )}
           <div className='filter-actions'>
             <Search value={filterRut} onChange={handleRutFilterChange} placeholder={'Filtrar por rut'} />
             <button onClick={handleClickUpdate} disabled={dataUser.length === 0}>

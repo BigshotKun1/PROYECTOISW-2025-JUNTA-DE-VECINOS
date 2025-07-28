@@ -16,6 +16,7 @@ import { useEditDirectiva } from '@hooks/directiva/useEditDirectiva';
 import { useDeleteDirectiva } from '@hooks/directiva/useDeleteDirectiva';
 import { createDirectiva } from '@services/directiva.service.js';
 import "@styles/directiva.css";
+import { Link } from "react-router-dom";
 
 
 
@@ -42,7 +43,7 @@ const DirectivaPage = () => {
   }, []);
 
  const handleAddClick = () => {
-  setIsModalCrearOpen(true); // ✅ Usa React, no Bootstrap DOM directamente
+  setIsModalCrearOpen(true); 
 };
 
    const isPeriodoActivo = (periodo) => {
@@ -87,8 +88,13 @@ const DirectivaPage = () => {
   return (
     <div className='main-container'>
       <div className='table-container-directiva'>
+        <div style={{ width:"90%", maxWidth:"970px", margin: "0 auto"}}>
         <div className='top-table'>
+            <Link to={`/users`}>
+              <h1 className='title-table'>Usuarios</h1>
+            </Link>
           <h1 className='title-table'>Directiva</h1>
+          
           <div className='filter-actions'>
             <Search value={filterNombre} onChange={handleNombreFilterChange} placeholder={'Filtrar por nombre'} />
             <button onClick={handleAddClick} title="Agregar miembro a la directiva">
@@ -108,6 +114,7 @@ const DirectivaPage = () => {
                 <img src={DeleteIcon} alt="Eliminar" />
               )}
             </button>
+          </div>
           </div>
         </div>
 

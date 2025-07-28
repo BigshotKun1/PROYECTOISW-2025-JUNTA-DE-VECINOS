@@ -190,3 +190,18 @@ export async function deleteDirectivaService({ id_usuario, id_periodo }) {
     return [null, "Error interno del servidor"];
   }
 }
+
+export async function getPeriodos() {
+  try {
+    const periodoRepository = AppDataSource.getRepository("DirectivaPeriodo");
+
+    const periodos = await periodoRepository.find();
+
+    if (!periodos || periodos.length === 0) return [null, "No hay periodoss"];
+    //console.log("meetings de service:", meetings);
+    return [periodos, null];
+  } catch (error) {
+    console.error("Error al obtener reuniones, el error es:", error);
+    return error;
+  }
+}
