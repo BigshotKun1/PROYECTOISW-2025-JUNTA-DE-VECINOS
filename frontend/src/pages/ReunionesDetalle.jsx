@@ -138,9 +138,9 @@ const ReunionDetalle = () => {
           const updated = await getMeetingById(reunion.id_reunion);
           setReunion(updated);
           if (err) {
-            showErrorAlert("Error al eliminar", "No se pudo eliminar la reunión. Inténtalo nuevamente.");
+            showErrorAlert("Error al eliminar", "No se pudo eliminar el acta. Inténtalo nuevamente.");
           } else {
-            showSuccessAlert("¡Eliminada!", "La reunión se eliminó correctamente");
+            showSuccessAlert("¡Eliminada!", "El acta se eliminó correctamente");
           }
         }
       } catch (error) {
