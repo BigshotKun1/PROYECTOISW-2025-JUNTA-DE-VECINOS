@@ -4,6 +4,7 @@ import { isAdminyDirectiva } from "../middlewares/authorization.middleware.js";
 import { authenticateJwt } from "../middlewares/authentication.middleware.js";
 import {
   createUser,
+  deleteCertificadoResidencia,
   deleteUser,
   getUser,
   getUsers,
@@ -23,6 +24,7 @@ router
   .get("/detail/", getUser)
   .patch("/detail/", updateUser)
   .delete("/detail/", deleteUser)
+  .patch("/detail/:rut", deleteCertificadoResidencia)
   .post(
     "/:rut/upload-certificado",
     uploadCertificados.single("certificado"),

@@ -29,9 +29,8 @@ const Reuniones = () => {
     }, []);
 
     const hoy = new Date();
-    const hoyStr = hoy.toISOString().split("T")[0];
-
-    const reunionesHoy = reuniones.filter(r => r.fecha_reunion === hoyStr);
+    //console.log(hoy)
+    const reunionesHoy = reuniones.filter(r => r.fecha_reunion === hoy);
 
     const reunionesProximas = reuniones.filter(r => {
 
@@ -39,10 +38,10 @@ const Reuniones = () => {
         const fechaUTC = new Date(fecha.getFullYear(), fecha.getMonth(), fecha.getDate());
         const hoyUTC = new Date(hoy.getFullYear(), hoy.getMonth(), hoy.getDate(),hoy.getHours(),hoy.getMinutes());
 
-        console.log("fechaUTC: ",fechaUTC)
-        console.log("hoyUTC: ",hoyUTC)
+        //console.log("fechaUTC: ",fechaUTC)
+        //console.log("hoyUTC: ",hoyUTC)
         const diferenciaDias = (fechaUTC - hoyUTC) / (1000 * 60 * 60 * 24);
-        console.log("diferenciaDias: ",diferenciaDias)
+        //console.log("diferenciaDias: ",diferenciaDias)
         return diferenciaDias > -0.3 && diferenciaDias <= 14;
     });
 

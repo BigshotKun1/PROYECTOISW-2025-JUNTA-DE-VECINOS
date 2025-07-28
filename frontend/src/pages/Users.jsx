@@ -10,9 +10,15 @@ import { useRef, useCallback, useState } from 'react';
 import '@styles/users.css';
 import useEditUser from '@hooks/users/useEditUser';
 import useDeleteUser from '@hooks/users/useDeleteUser';
-import { showSuccessAlert, showErrorAlert } from "@helpers/sweetAlert.js";
-import { uploadCertificado } from '../services/user.service';
+import { showSuccessAlert, deleteDataAlert, showErrorAlert } from "@helpers/sweetAlert.js";
+import { uploadCertificado, deleteCertificado } from '../services/user.service';
 
+  var API_URL;
+  if(window.location.origin !="http://localhost:5173" ){
+      API_URL="http://146.83.198.35:1287"
+  }else{
+      API_URL="http://localhost:3000"
+  }
 const Users = () => {
   const { users, fetchUsers, setUsers } = useUsers();
   const [filterRut, setFilterRut] = useState('');
@@ -36,39 +42,84 @@ const Users = () => {
   const handleSelectionChange = useCallback((selectedUsers) => {
     setDataUser(selectedUsers);
   }, [setDataUser]);
-
+  console.log(users)
   const columns = [
-    { title: "Nombre", field: "nombreCompleto", width: 250, responsive: 0 },
+    { title: "Nombre", field: "nombreCompleto", width: 300, responsive: 0 },
     { title: "Correo electrónico", field: "email", width: 250, responsive: 3 },
     { title: "Rut", field: "rut", width: 100, responsive: 2 },
-    { title: "Rol", field: "rol", width: 150, responsive: 2 },
+    { title: "Rol", field: "rol", width: 160, responsive: 2 },
     { title: "Creado", field: "createdAt", width: 200, responsive: 2 },
     { title: "Cert. Residencia", field: "certificadoResidencia_pdf",
     formatter: (cell) => {
       const certificado = cell.getValue();
-      if (certificado) {
-        return `<a
-                  href="http://localhost:3000${certificado}"
-                  target="_blank"
-                  style="color:white;background:#003366;padding:4px 12px;border-radius:6px;"
-                >Descargar</a>`;
-      }
       const { rut } = cell.getRow().getData();
-      return `<button
-                class="tabulator-upload-btn"
-                data-rut="${rut}"
-                style="padding:4px 8px;border-radius:4px; border:none;cursor:pointer;"
-              >Subir</button>`;
+
+      if (certificado) {
+        return `
+          <div style="display: flex; gap: 8px; justify-content: center;">
+            <a
+              href="${API_URL}${certificado}"
+              target="_blank"
+              style="color: white; background-color: #003366; padding: 6px 16px; border-radius: 6px; text-decoration: none;"
+            >Descargar</a>
+            <button
+              class="tabulator-delete-cert-btn"
+              data-rut="${rut}"
+              style="color: white; background-color: #cc0000; padding: 6px 16px; border-radius: 6px; border: none; cursor: pointer;"
+            >Eliminar</button>
+          </div>`;
+      }
+      return `
+        <div style="display: flex; gap: 8px; justify-content: center;">
+          <button class="tabulator-upload-btn" data-rut="${rut}" style="color:white; background-color: #3887eeff; padding: 6px 16px; border-radius: 6px; border: none; cursor: pointer;">
+            Subir
+          </button>
+        </div>`;
     },
-    cellClick: (e, ) => {
-      if (e.target.classList.contains("tabulator-upload-btn")) {
-        //const rut = e.target?.dataset.rut;
-        const rut = e.target.dataset.rut;
-        openFileDialog(rut);
+    cellClick: async (e,) => {
+      const rut = e.target.dataset.rut;
+
+      if (e.target.classList.contains("tabulator-delete-cert-btn")) {
+        try {
+          const result = await deleteDataAlert();
+          console.log(result)
+          if (result.isConfirmed) {
+            //console.log("rut a enviar",rut)
+            const [, err] = await deleteCertificado(rut);
+            await fetchUsers(); 
+            if (err) {
+              showErrorAlert("Error al eliminar", "No se pudo eliminar el Certificado. Inténtalo nuevamente.");
+            } else {
+              showSuccessAlert("¡Eliminado!", "El certificado se eliminó correctamente");
+            }
+          }
+          await fetchUsers();
+        } catch (error) {
+          console.error("Error inesperado:", error);
+          showErrorAlert("Error", "Ocurrió un error inesperado al eliminar el certificado");
+      }
+    return;
+  }
+  if (e.target.classList.contains("tabulator-upload-btn")) {
+    openFileDialog(rut);
       }
     },
-    width: 180,
+    width: 250,
     hozAlign: "center",
+  },
+  { title: "Fecha Cert. Residencia", field: "fechaCertificadoResidencia", width: 200, responsive: 0,
+      formatter: (cell) => {
+      const rawDate = cell.getValue();
+      if (!rawDate) return "";
+        const fecha = new Date(rawDate);
+        return fecha.toLocaleDateString('es-CL', {
+          year: 'numeric',
+          month: '2-digit',
+          day: '2-digit',
+          hour: '2-digit',
+          minute: '2-digit',
+        });
+      }
     },
   ];
 

@@ -16,7 +16,7 @@ function useTable({ data, columns, filter, dataToFilter, initialSortName, onSele
                     titleFormatter: false, 
                     hozAlign: "center", 
                     headerSort: false, 
-                    width:"5px",
+                    width:"4px",
                     cellClick: function (e, cell) {
                         cell.getRow().toggleSelect();
                     } 

@@ -16,6 +16,7 @@ import {
   handleSuccess,
 } from "../handlers/responseHandlers.js";
 import { AppDataSource } from "../config/configDb.js";
+import { eliminarCertificado } from "../utils/multerCertificados.js";
 
 export async function createUser(req, res) {
   try {
@@ -153,15 +154,17 @@ export async function deleteUser(req, res) {
 }
 
 export async function subirCertificadoResidencia(req, res) {
-  const userRepository = AppDataSource.getRepository("User");
-  const rutUser = req.params.rut;
-  const file = req.file;
-
-  if (!file) {
-    return res.status(400).json({ message: "No se ha subido ningún archivo." });
-  }
-
   try {
+    const userRepository = AppDataSource.getRepository("User");
+    const rutUser = req.params.rut;
+    const file = req.file;
+
+    if (!file) {
+      return res
+        .status(400)
+        .json({ message: "No se ha subido ningún archivo." });
+    }
+
     const user = await userRepository.findOneBy({
       rut: rutUser,
     });
@@ -170,6 +173,7 @@ export async function subirCertificadoResidencia(req, res) {
     }
 
     user.certificadoResidencia_pdf = `/uploads/certificadosResidencia/${file.filename}`;
+    user.fechaCertificadoResidencia = new Date();
     await userRepository.save(user);
 
     return res.status(200).json({
@@ -177,9 +181,36 @@ export async function subirCertificadoResidencia(req, res) {
       user,
     });
   } catch (error) {
-    console.error(error);
-    res
-      .status(500)
-      .json({ message: "Error al subir Certificado de Residencia." });
+    handleErrorServer(res, 500, error.message);
+  }
+}
+
+export async function deleteCertificadoResidencia(req, res) {
+  try {
+    console.log("Llega al controller! deleteCertificado");
+    const userRepository = AppDataSource.getRepository("User");
+    const rutUser = req.params.rut;
+    console.log("rutUser", rutUser);
+    const userFound = await userRepository.findOneBy({
+      rut: rutUser,
+    });
+
+    if (!userFound) {
+      return res.status(404).json({
+        message: "Usuario no encontrado.",
+      });
+    }
+    if (userFound.certificadoResidencia_pdf) {
+      eliminarCertificado(userFound.certificadoResidencia_pdf);
+    }
+
+    userFound.certificadoResidencia_pdf = null;
+    await userRepository.save(userFound);
+    return res.status(200).json({
+      message: "Certificado de Residencia eliminado exitosamente.",
+      data: userFound,
+    });
+  } catch (error) {
+    handleErrorServer(res, 500, error.message);
   }
 }

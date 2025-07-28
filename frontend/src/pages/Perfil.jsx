@@ -1,7 +1,12 @@
 import { useState, useEffect } from "react";
 import { getHistorial } from "@services/asistencia.service.js";
 import '@styles/perfil.css';
-
+  var API_URL;
+  if(window.location.origin !="http://localhost:5173" ){
+      API_URL="http://146.83.198.35:1287"
+  }else{
+      API_URL="http://localhost:3000"
+  }
 const UserProfile = () => {
   const [user, setUser] = useState(null);
   const [mostrarModalHistorial, setMostrarModalHistorial] = useState(false);
@@ -32,7 +37,6 @@ const UserProfile = () => {
   console.log("certificado de residencia",user.certificadoResidencia_pdf)
 
   return (
-    
     <div className="profile-container">
       <div className="profile-card">
         <img
@@ -41,12 +45,23 @@ const UserProfile = () => {
           alt="Foto de perfil"
         />
         <div className="profile-details">
-          <h2>{user.nombreCompleto}</h2>
+          <h2>{user.nombreCompleto.toUpperCase()}</h2>
           <p><strong>RUT:</strong> {user.rut}</p>
           <p><strong>Email:</strong> {user.email}</p>
           <p><strong>Rol:</strong> {typeof user.rol === 'object' ? user.rol.nombreRol : user.rol}</p>
-          <p><strong>Certificado de Residencia:</strong> {user.certificadoResidencia_pdf}</p>
-
+          <p><strong>Certificado de Residencia:</strong></p>
+          {!user.certificadoResidencia_pdf ? (
+            <p style = {{color:"#FF0000"}}><strong>No cuentas con un certificado adjunto</strong></p>
+          ) : (
+            <div className="pdf-viewer">
+              <embed
+                src={`${API_URL}${user.certificadoResidencia_pdf}`}
+                type="application/pdf"
+                width="100%"
+                height="500px"
+              />
+            </div>
+          )}    
           {autorizado && (<button onClick={abrirModalHistorial} style={{ marginTop: "20px", padding: "8px 16px", background: "#003366", color: "white", border: "none", borderRadius: "5px", cursor: "pointer"}}>Ver historial de asistencia</button>)}
           {mostrarModalHistorial && (
         <div className="modal-overlay"> 

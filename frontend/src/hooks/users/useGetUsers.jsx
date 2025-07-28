@@ -13,6 +13,7 @@ const useUsers = () => {
                 email: user.email,
                 rol: user.rol,
                 certificadoResidencia_pdf: user.certificadoResidencia_pdf,
+                fechaCertificadoResidencia:user.fechaCertificadoResidencia,
                 createdAt: user.createdAt,
             }));
             dataLogged(formattedData);

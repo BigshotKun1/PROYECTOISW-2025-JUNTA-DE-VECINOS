@@ -148,12 +148,14 @@ export async function getHistorialDeAsistenciaService(rut) {
       .innerJoin("asistencia.id_reunion", "reunion")
       .innerJoin("asistencia.id_estado_asistencia", "estado")
       .where("asistencia.id_usuario = :id", { id: usuario.id_usuario })
+      .andWhere("reunion.fecha_reunion <= CURRENT_DATE")
       .select([
         "asistencia.id_asistencia_reunion AS id_asistencia",
         "estado.nombre_estado_asistencia AS estado",
         "reunion.fecha_reunion AS fecha",
         "reunion.descripcion_reunion AS descripcion",
       ])
+      .orderBy("reunion.fecha_reunion", "DESC")
       .getRawMany();
 
     if (!resultados || resultados.length === 0)

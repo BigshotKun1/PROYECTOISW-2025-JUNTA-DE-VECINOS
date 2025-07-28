@@ -1,13 +1,22 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import { getMeetingById , updateReunion} from "@services/reuniones.service.js";
+import { getMeetingById , updateReunion,  deleteActa} from "@services/reuniones.service.js";
 import { getAsistenciasByReunion, updateAsistenciaEstado } from "@services/asistencia.service.js";
 import ListaAsistencias from "@components/ListaAsistencias.jsx";
 import '@styles/reuniondetalle.css';
 import { uploadActaToMeeting } from "@services/reuniones.service.js";
 import { Link } from "react-router-dom";
-import { modifyDataAlert, showSuccessAlert, showErrorAlert } from "@helpers/sweetAlert.js";
+import { modifyDataAlert, showSuccessAlert, showErrorAlert,deleteDataAlert } from "@helpers/sweetAlert.js";
 
+  var API_URL;
+  if(window.location.origin !="http://localhost:5173" ){
+      API_URL="http://146.83.198.35:1287"
+  }else{
+      API_URL="http://localhost:3000"
+  }
+  //console.log(API_URL)
+
+  console.log(window.location.origin)
 const ReunionDetalle = () => {
     const { id } = useParams();
     const [reunion, setReunion] = useState(null);
@@ -97,6 +106,7 @@ const ReunionDetalle = () => {
     };
 
     const handleUploadPdf = async () => {
+       //console.log("🔼 handleUploadPdf disparado, selectedPdf:", selectedPdf);
       if (!selectedPdf) {
         showErrorAlert("Sin archivo", "Primero selecciona un archivo PDF.");
         return;
@@ -118,7 +128,27 @@ const ReunionDetalle = () => {
         }
       }
     };
-      
+
+    const handleDeletePdf = async () => {
+      try {
+        const result = await deleteDataAlert();
+
+        if (result.isConfirmed) {
+          const [, err] = await deleteActa(reunion.id_reunion);
+          const updated = await getMeetingById(reunion.id_reunion);
+          setReunion(updated);
+          if (err) {
+            showErrorAlert("Error al eliminar", "No se pudo eliminar la reunión. Inténtalo nuevamente.");
+          } else {
+            showSuccessAlert("¡Eliminada!", "La reunión se eliminó correctamente");
+          }
+        }
+      } catch (error) {
+        console.error("Error al eliminar acta:", error);
+        showErrorAlert("Error inesperado", "Ocurrió un error al eliminar el  acta.");
+      }
+    }
+    
     if (!reunion) return <p>Cargando reunión...</p>;
     
     return (
@@ -210,21 +240,40 @@ const ReunionDetalle = () => {
               <h3>📄 Acta de Reunión (PDF)</h3>
                 <div style={{display:"grid",alignItems: "center", gap: "8px" }}>
                     <>
-                      <input type="file" accept="application/pdf" onChange={handlePdfChange} />
-                      <button onClick={handleUploadPdf}>Subir Acta</button>
+                    {!reunion.acta_pdf &&(
+                      <>
+                        <input type="file" accept="application/pdf" onChange={handlePdfChange} />
+                        <button onClick={handleUploadPdf} style={{ alignSelf: "flex-end", padding: "8px 16px", background: "#003366",color: "white", border: "none", borderRadius: "5px",cursor: "pointer", width:"100px"}} >Subir Acta</button>
+                      </>
+                    )}
+                    
                     </>
                 </div>
             </div>
           </>
         )}
+        
+        {!puedeEditarSubirActa &&!reunion.acta_pdf && !selectedPdf && (
+          <div style={{ marginTop: "20px",justifyContent: "center",display:"grid",alignItems: "center", gap: "8px" ,textAlign: "center"}}>
+          <h2>El acta de la reunión aún no ha sido publicada.</h2>
+          <p>Consulta con tu Directiva!</p>
+          </div>
+        )}
       {reunion.acta_pdf && !selectedPdf && (
         <div className="pdf-viewer">
           <embed
-            src={`http://localhost:3000${reunion.acta_pdf}`}
+            src={`${API_URL}${reunion.acta_pdf}`}
             type="application/pdf"
             />
           </div>
+        )} 
+        {puedeEditarSubirActa&& (
+        <div style={{ marginTop: "20px",justifyContent: "center",display:"grid",alignItems: "center", gap: "8px" }}>
+        {reunion.acta_pdf && (
+          <button onClick={handleDeletePdf}   style={{ alignSelf: "flex-left", padding: "8px 16px", background: "#cc0000",color: "white", border: "none", borderRadius: "5px",cursor: "pointer",width:"200px"}} >Eliminar Acta</button>
         )}
+        </div>
+      )}
       </div>
     );
 };

@@ -91,3 +91,14 @@ export async function updateReunion(id, reunionActualizada) {
     return [null, err];
   }
 }
+
+export async function deleteActa(id) {
+  try {
+    const response = await axios.patch(`/meetings/detail/${id}`);
+    console.log(response);
+    return [response.data, null];
+  } catch (error) {
+    console.log(error);
+    return [null, error];
+  }
+}

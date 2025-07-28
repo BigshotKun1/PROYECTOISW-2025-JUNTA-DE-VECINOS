@@ -28,4 +28,18 @@ const storageCertificados = multer.diskStorage({
   },
 });
 
+export async function eliminarCertificado(certificado) {
+  const __filename = fileURLToPath(import.meta.url);
+  const __dirname = dirname(__filename);
+  const fullPath = path.join(__dirname, "..", certificado);
+  if (fs.existsSync(fullPath)) {
+    try {
+      fs.unlinkSync(fullPath);
+      console.log(`Certificado eliminado: ${fullPath}`);
+    } catch (fileError) {
+      console.error(`Error al eliminar certificado: ${fileError.message}`);
+    }
+  }
+}
+
 export const uploadCertificados = multer({ storage: storageCertificados });

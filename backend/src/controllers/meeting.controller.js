@@ -116,7 +116,7 @@ export async function updateMeeting(req, res) {
     console.log(reunionMod);
     if (
       reunion.estado.id_estado != reunionMod.estado.id_estado &&
-      reunionMod.estado.id_estado == 3
+      reunionMod.estado.id_estado == 2
     ) {
       await notifyInscritosSuspensionReuniones(meetingUpdated, id);
     }
@@ -155,6 +155,7 @@ export async function deleteMeeting(req, res) {
 
 export async function subirActaReunion(req, res) {
   try {
+    console.log("LLEGO AL CONTROLLER DE SUBIR ACTA");
     const meetingRepository = AppDataSource.getRepository("Reunion");
     const idReunion = req.params.id;
     const file = req.file;
@@ -179,5 +180,35 @@ export async function subirActaReunion(req, res) {
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Error al subir el acta." });
+  }
+}
+
+export async function deleteActa(req, res) {
+  try {
+    console.log("Llega al controller! deleteActa");
+    const meetingRepository = AppDataSource.getRepository("Reunion");
+    const idReunion = req.params.id;
+    console.log("idReunion", idReunion);
+    const meetingFound = await meetingRepository.findOneBy({
+      id_reunion: parseInt(idReunion),
+    });
+
+    if (!meetingFound) {
+      return res.status(404).json({
+        message: "Reunion no encontrada.",
+      });
+    }
+    if (meetingFound.certificadoResidencia_pdf) {
+      eliminarActa(meetingFound.acta_pdf);
+    }
+
+    meetingFound.acta_pdf = null;
+    await meetingRepository.save(meetingFound);
+    return res.status(200).json({
+      message: "Acta de reunión eliminada exitosamente.",
+      data: meetingFound,
+    });
+  } catch (error) {
+    handleErrorServer(res, 500, error.message);
   }
 }

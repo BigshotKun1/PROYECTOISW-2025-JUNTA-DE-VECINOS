@@ -3,19 +3,24 @@ import { getAllReuniones } from "../services/reuniones.service";
 import Table from "../components/Table";
 import '@styles/reuniondetalle.css';
 
+  var API_URL;
+  if(window.location.origin !="http://localhost:5173" ){
+      API_URL="http://146.83.198.35:1287"
+  }else{
+      API_URL="http://localhost:3000"
+  }
 const Home = () => {
   const [reuniones, setReuniones] = useState([]);
   const columns = [
-    { title: 'Tema',field: 'descripcion_reunion',width: 330},
-    { title: 'Fecha', field: 'fecha_reunion',width: 150},
-    { title: 'Lugar', field: 'lugar_reunion',width: 150},
+    { title: 'Asunto',field: 'descripcion_reunion',width: 450},
+    { title: 'Fecha', field: 'fecha_reunion',width: 180},
     { title: 'Acta',field: 'acta_pdf',formatter: (cell) => {  
       const acta = cell.getValue();
       if (acta) {
         return  `
-          <div style="display: flex; justify-content: left; align-items: center; height: 100%;">
+          <div style="display: flex; justify-content:center; align-items: center; height: 100%;">
             <a
-              href="http://localhost:3000${acta}" 
+              href="${API_URL}${acta}" 
               target="_blank" 
               rel="noopener noreferrer"
               style="color: white; background-color: #003366; padding: 4px 12px; border-radius: 6px; text-decoration: none;"
@@ -24,10 +29,10 @@ const Home = () => {
           </div>`;
         }
     return `
-    <div style="display: flex; justify-content: left; align-items: center; height: 100%;">
+    <div style="display: flex; justify-content: center; align-items: center; height: 100%;">
     <span style="color: gray;">Sin acta</span>
     </div>`
-    }, width: 150, hozAlign: "center"}
+    }, width: 200, hozAlign: "center"}
     ];
   useEffect(() => {
     const fetchReuniones = async () => {
@@ -39,8 +44,9 @@ const Home = () => {
   }, []);
 
   return (
+    <div  style={{ maxWWidth:"800px",margin: "2rem auto",padding: "2rem", backgroundColor:"#fefefe",borderRadius:"12px",boxShadow:"0 4px 12px rgba(0, 0, 0, 0.1)", fontFamily: "'Segoe UI', sansSerif"}}>
     <div className='main-container'>
-      <div className='table-container'>
+      <div style={{  width:"90%", maxWidth:"970px", margin: "0 auto"}}>
         <div className='top-table'>
           <h1 className='title-table'>Reuniones</h1>
         </div>  
@@ -53,6 +59,7 @@ const Home = () => {
           onSelectionChange={() => {}}
         />
       </div>  
+    </div>
     </div>
   );
 };

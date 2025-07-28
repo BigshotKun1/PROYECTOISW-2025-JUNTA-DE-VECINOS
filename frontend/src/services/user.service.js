@@ -61,3 +61,14 @@ export async function getUser(rut) {
     return error.response.data;
   }
 }
+
+export async function deleteCertificado(rut) {
+  try {
+    const response = await axios.patch(`/user/detail/${rut}`);
+    console.log(response);
+    return [response.data, null];
+  } catch (error) {
+    console.log(error);
+    return [null, error];
+  }
+}

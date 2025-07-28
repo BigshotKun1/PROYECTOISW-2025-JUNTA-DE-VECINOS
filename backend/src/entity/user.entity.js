@@ -51,6 +51,10 @@ const UserSchema = new EntitySchema({
       type: "int",
       nullable: false,
     },
+    fechaCertificadoResidencia: {
+      type: "timestamp with time zone",
+      nullable: true,
+    },
   },
   indices: [
     {
