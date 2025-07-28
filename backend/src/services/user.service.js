@@ -76,11 +76,16 @@ export async function getUsersService() {
   try {
     const userRepository = AppDataSource.getRepository(User);
 
-    const users = await userRepository.find();
+    const users = await userRepository.find({
+      relations: ["rol"],
+    });
 
     if (!users || users.length === 0) return [null, "No hay usuarios"];
 
-    const usersData = users.map(({ password, ...user }) => user);
+    const usersData = users.map(({ password, rol, ...user }) => ({
+      ...user,
+      rol: rol?.nombreRol || rol || null,
+    }));
 
     return [usersData, null];
   } catch (error) {

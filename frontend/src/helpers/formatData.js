@@ -12,6 +12,23 @@ export function formatUserData(user) {
     };
 }
 
+export function formatDirectivaData(directivaMiembro) {
+  return {
+    ...directivaMiembro,
+    nombreCompleto: directivaMiembro.usuario?.nombreCompleto || '-',
+    rut: directivaMiembro.usuario?.rut || '-',
+    nombreRol: directivaMiembro.rol?.nombreRol || '-',
+    fechaInicio: directivaMiembro.periodo?.fechaInicio || '-',
+    fechaTermino: directivaMiembro.periodo?.fechaTermino || '-',
+    // Formatea fechas si quieres con alguna librería tipo dayjs/moment
+    createdAt: directivaMiembro.createdAt ? formatTempo(directivaMiembro.createdAt, "DD-MM-YYYY") : '-',
+  };
+}
+
+
+
+
+
 export function convertirMinusculas(obj) {
     for (let key in obj) {
         if (typeof obj[key] === 'string') {

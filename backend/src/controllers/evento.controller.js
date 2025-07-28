@@ -13,13 +13,17 @@ import {
   handleErrorServer,
   handleSuccess,
 } from "../handlers/responseHandlers.js";
-import { notifyVecinosEvento } from "../services/email.service.js"
+import { notifyVecinosEvento, notifyVecinosEventoActualizado, notifyVecinosEventoEliminado  } from "../services/email.service.js"
+import DirectivaMiembro from "../entity/DirectivaMiembros.js";
+
 
 // Crear evento (solo directiva)
 export async function createEvento(req, res) {
   try {
     const { body } = req;
     const { error } = eventoValidation.validate(body);
+    const miembroRepo = AppDataSource.getRepository(DirectivaMiembro);
+
     if (error) {
       return handleErrorClient(res, 400, "Error de validación", error.message);
     }
@@ -28,6 +32,7 @@ export async function createEvento(req, res) {
 
     const [nuevoEvento, errorEvento] = await createEventoService({ ...body, id_usuario });
     if (errorEvento) {
+        console.error("Error al crear evento:", errorEvento);
       return handleErrorClient(res, 400, "Error al crear evento", errorEvento);
     }
 
@@ -67,6 +72,7 @@ export async function deleteEvento(req, res) {
     }
 
     handleSuccess(res, 200, "Evento eliminado con éxito", eventoEliminado);
+    await notifyVecinosEventoEliminado(eventoEliminado);
   } catch (error) {
     handleErrorServer(res, 500, error.message);
   }
@@ -87,6 +93,7 @@ export async function updateEvento(req, res) {
     }
 
     handleSuccess(res, 200, "Evento actualizado con éxito", eventoActualizado);
+    await notifyVecinosEventoActualizado(eventoActualizado);
   } catch (error) {
     handleErrorServer(res, 500, error.message);
   }

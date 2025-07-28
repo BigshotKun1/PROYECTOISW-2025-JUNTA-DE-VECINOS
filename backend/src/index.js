@@ -8,11 +8,22 @@ import passport from "passport";
 import express, { json, urlencoded } from "express";
 import { cookieKey, HOST, PORT } from "./config/configEnv.js";
 import { connectDB } from "./config/configDb.js";
-import { crearRoles, createEstado, createEstadoAsistencia, createUsers } from "./config/initialSetup.js";
+import {
+  crearRoles,
+  createEstado,
+  createEstadoAsistencia,
+  createUsers,
+} from "./config/initialSetup.js";
 import { passportJwtSetup } from "./auth/passport.auth.js";
+import path from "path";
+import { fileURLToPath } from "url";
+import { dirname } from "path";
+import "./cron-tasks.js"; 
 
 async function setupServer() {
   try {
+    const __filename = fileURLToPath(import.meta.url);
+    const __dirname = dirname(__filename);
     const app = express();
 
     app.disable("x-powered-by");
@@ -56,6 +67,10 @@ async function setupServer() {
 
     app.use(passport.initialize());
     app.use(passport.session());
+    app.use(
+      "/uploads/actas",
+      express.static(path.join(__dirname, "uploads", "actas")),
+    );
 
     passportJwtSetup();
 

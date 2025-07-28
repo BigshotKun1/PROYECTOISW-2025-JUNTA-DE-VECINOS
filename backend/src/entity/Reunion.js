@@ -22,7 +22,7 @@ const ReunionSchema = new EntitySchema({
     },
     lugar_reunion: {
       type: "varchar",
-      length:255,
+      length: 255,
       nullable: false,
     },
     hora_inicio: {
@@ -33,13 +33,18 @@ const ReunionSchema = new EntitySchema({
       type: "time",
       nullable: false,
     },
+    acta_pdf: {
+      type: "varchar",
+      length: 255,
+      nullable: true,
+    },
   },
   relations: {
     periodo: {
-    target: "DirectivaPeriodo",
-    type: "many-to-one",
-    joinColumn: { name: "id_periodo", referencedColumnName: "id_periodo" },
-  },
+      target: "DirectivaPeriodo",
+      type: "many-to-one",
+      joinColumn: { name: "id_periodo", referencedColumnName: "id_periodo" },
+    },
     estado: {
       target: "Estado",
       type: "many-to-one",
@@ -49,7 +54,7 @@ const ReunionSchema = new EntitySchema({
         referencedColumnName: "id_estado",
       },
     },
-      votaciones: {
+    votaciones: {
       target: "Votaciones",
       type: "one-to-many",
       inverseSide: "reuniones",
@@ -74,10 +79,17 @@ const ReunionSchema = new EntitySchema({
       columns: ["lugar_reunion"],
     },
   ],
-  uniques: [{
-    name : "unique_fecha_lugar_horaInicio_horaTermino",
-    columns: ["fecha_reunion","hora_inicio","hora_termino","lugar_reunion"]
-  }]
+  uniques: [
+    {
+      name: "unique_fecha_lugar_horaInicio_horaTermino",
+      columns: [
+        "fecha_reunion",
+        "hora_inicio",
+        "hora_termino",
+        "lugar_reunion",
+      ],
+    },
+  ],
 });
 
 export default ReunionSchema;
