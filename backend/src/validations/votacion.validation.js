@@ -6,4 +6,5 @@ export const votacionCreacionValidation = Joi.object({
   fecha_votacion: Joi.date().iso().required(),
   hora_inicio: Joi.string().pattern(/^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/).required(),
   hora_termino: Joi.string().pattern(/^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/).required(),
-}); 
+  opciones: Joi.array().items(Joi.string()).min(1).required(),
+});
