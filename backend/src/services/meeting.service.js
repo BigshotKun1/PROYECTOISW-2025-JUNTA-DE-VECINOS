@@ -64,9 +64,6 @@ export async function createMeetingService(dataMeeting) {
 
     await createAsistenciasService(meetingSaved.id_reunion);
 
-    console.log("➡️ Fecha que TypeORM devolvió:", meetingSaved.fecha_reunion);
-    console.log("➡️ Tipo:", typeof meetingSaved.fecha_reunion);
-
     return [meetingSaved, null];
   } catch (error) {
     console.error("Error al crear reunión:", error);
@@ -125,8 +122,8 @@ export async function updateMeetingService(id, dataMeeting) {
       lugarReunion,
       descripcion_reunion,
     } = dataMeeting;
-    const fechaReunionAux = new Date(dataMeeting.fecha_reunion);
-    if (!onTime(fechaReunionAux)) {
+    //const fechaReunionAux = new Date(dataMeeting.fecha_reunion);
+    if (!onTime(dataMeeting.fecha_reunion)) {
       return [
         null,
         "La reunión debe editarse con al menos 24 horas de anticipación.",
@@ -149,16 +146,25 @@ export async function updateMeetingService(id, dataMeeting) {
         errorMeting: "Ya existe una reunion con esas propiedades.",
       };
     }
+    console.log("dataMeeting.fecha_reunion:", dataMeeting.fecha_reunion);
+    console.log("fechaReunion", fechaReunion);
+    console.log("reunion antes", meetingFound);
+
+    const meetingA = await meetingFound;
+    const fechaAnterior = meetingA.fecha_reunion;
+    const fechaNueva =
+      typeof dataMeeting.fecha_reunion === "string"
+        ? dataMeeting.fecha_reunion.split("T")[0]
+        : dataMeeting.fecha_reunion.toISOString().split("T")[0];
 
     const dataMeetingUpdated = {
-      fecha_reunion: dataMeeting.fecha_reunion,
+      ...(fechaAnterior !== fechaNueva && { fecha_reunion: fechaNueva }),
       hora_inicio: dataMeeting.hora_inicio,
       hora_termino: dataMeeting.hora_termino,
       lugar_reunion: dataMeeting.lugar_reunion,
       descripcion_reunion: dataMeeting.descripcion_reunion,
       estado: { id_estado: dataMeeting.id_estado },
     };
-
     await meetingRepository.update(id, dataMeetingUpdated);
 
     const meeting = await meetingRepository.findOne({

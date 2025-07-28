@@ -1,3 +1,4 @@
+"use strict";
 import multer from "multer";
 import path, { dirname, join } from "path";
 import fs from "fs";
@@ -21,5 +22,19 @@ const storage = multer.diskStorage({
     cb(null, uniqueSuffix + path.extname(file.originalname));
   },
 });
+
+export async function eliminarActa(acta) {
+  const __filename = fileURLToPath(import.meta.url);
+  const __dirname = dirname(__filename);
+  const fullPath = path.join(__dirname, "..", acta);
+  if (fs.existsSync(fullPath)) {
+    try {
+      fs.unlinkSync(fullPath);
+      console.log(`Acta eliminada: ${fullPath}`);
+    } catch (fileError) {
+      console.error(`Error al eliminar acta: ${fileError.message}`);
+    }
+  }
+}
 
 export const upload = multer({ storage });

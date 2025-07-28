@@ -1,12 +1,22 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import { getMeetingById , updateReunion} from "@services/reuniones.service.js";
+import { getMeetingById , updateReunion,  deleteActa} from "@services/reuniones.service.js";
 import { getAsistenciasByReunion, updateAsistenciaEstado } from "@services/asistencia.service.js";
 import ListaAsistencias from "@components/ListaAsistencias.jsx";
 import '@styles/reuniondetalle.css';
 import { uploadActaToMeeting } from "@services/reuniones.service.js";
 import { Link } from "react-router-dom";
+import { modifyDataAlert, showSuccessAlert, showErrorAlert,deleteDataAlert } from "@helpers/sweetAlert.js";
 
+  var API_URL;
+  if(window.location.origin !="http://localhost:5173" ){
+      API_URL="http://146.83.198.35:1287"
+  }else{
+      API_URL="http://localhost:3000"
+  }
+  //console.log(API_URL)
+
+  console.log(window.location.origin)
 const ReunionDetalle = () => {
     const { id } = useParams();
     const [reunion, setReunion] = useState(null);
@@ -54,17 +64,29 @@ const ReunionDetalle = () => {
 
     const handleEditarSubmit = async (e) => {
       e.preventDefault();
-      try {
-        console.log("lo que mando al backend",formData)
-        await updateReunion(reunion.id_reunion, formData);
-        const updated = await getMeetingById(reunion.id_reunion);
-        setReunion(updated);
-        alert("✅ Reunión actualizada correctamente");
-        setMostrarModal(false);
+      
+      const result = await modifyDataAlert();
+      
+      if (result.isConfirmed) {
+        //console.log("lo que mando al backend", formData);
+        const [response, error] = await updateReunion(reunion.id_reunion, formData);
+        if (response) {
 
-      } catch (error) {
-        console.error("Error actualizando reunión:", error);
-        alert("❌ Error al actualizar");
+          const updated = await getMeetingById(reunion.id_reunion);
+          setReunion(updated);
+          showSuccessAlert("¡Actualización exitosa!", "La reunión ha sido actualizada correctamente");
+          setMostrarModal(false);
+        } else {
+          console.error("Error actualizando reunión:", error);
+          if (error.response && error.response.data && error.response.data.message) {
+            showErrorAlert("Error de validación", error.response.data.message);
+            
+          } else if (error.message) {
+            showErrorAlert("Error al actualizar", error.message);
+          } else {
+            showErrorAlert("Error al actualizar", "No se pudo actualizar la reunión");
+          }
+        }
       }
     };
     
@@ -76,27 +98,58 @@ const ReunionDetalle = () => {
     const handlePdfChange = (e) => {
       const file = e.target.files[0];
         if (file && file.type === "application/pdf") {
-          setPdfFile(URL.createObjectURL(file)); // para previsualizar
-          setSelectedPdf(file); // para subir
+          setPdfFile(URL.createObjectURL(file)); 
+          setSelectedPdf(file); 
         } else {
-          alert("Solo se permiten archivos PDF.");
+          showErrorAlert("Archivo no válido", "Solo se permiten archivos PDF.");
         }
     };
 
     const handleUploadPdf = async () => {
-      if (!selectedPdf) return alert("Primero selecciona un archivo PDF.");
-        const [, err] = await uploadActaToMeeting(reunion.id_reunion, selectedPdf);
-          if (!err) {
-            alert("✅ Acta subida correctamente.");
-            const updated = await getMeetingById(reunion.id_reunion);
-            setReunion(updated);
-            setSelectedPdf(null);
+       //console.log("🔼 handleUploadPdf disparado, selectedPdf:", selectedPdf);
+      if (!selectedPdf) {
+        showErrorAlert("Sin archivo", "Primero selecciona un archivo PDF.");
+        return;
+      }
+      const [, err] = await uploadActaToMeeting(reunion.id_reunion, selectedPdf);
+      if (!err) {
+        showSuccessAlert("¡Acta subida!", "El acta se ha subido correctamente.");
+        const updated = await getMeetingById(reunion.id_reunion);
+        setReunion(updated);
+        setSelectedPdf(null);
+      } else {
+        console.error("Error uploading PDF:", err);
+        if (err.response && err.response.data && err.response.data.message) {
+          showErrorAlert("Error al subir", err.response.data.message);
+        } else if (err.message) {
+          showErrorAlert("Error al subir", err.message);
+        } else {
+          showErrorAlert("Error al subir", "No se pudo subir el acta. Inténtalo nuevamente.");
+        }
+      }
+    };
+
+    const handleDeletePdf = async () => {
+      try {
+        const result = await deleteDataAlert();
+
+        if (result.isConfirmed) {
+          const [, err] = await deleteActa(reunion.id_reunion);
+          const updated = await getMeetingById(reunion.id_reunion);
+          setReunion(updated);
+          if (err) {
+            showErrorAlert("Error al eliminar", "No se pudo eliminar el acta. Inténtalo nuevamente.");
           } else {
-            alert("❌ Error al subir el acta.");
+            showSuccessAlert("¡Eliminada!", "El acta se eliminó correctamente");
           }
-      };
-      
-      if (!reunion) return <p>Cargando reunión...</p>;
+        }
+      } catch (error) {
+        console.error("Error al eliminar acta:", error);
+        showErrorAlert("Error inesperado", "Ocurrió un error al eliminar el  acta.");
+      }
+    }
+    
+    if (!reunion) return <p>Cargando reunión...</p>;
     
     return (
       <div className="contenedor-detalle">
@@ -126,7 +179,7 @@ const ReunionDetalle = () => {
                   <h3>Editar Reunión</h3>
                   
                   <form onSubmit={handleEditarSubmit}>
-                    <div style={{marginRight:"40px"}}>
+                      <div style={{marginRight:"40px"}}>
                       <div style={{marginBottom:"10px"}}>
                         <label>Descripción:</label>
                         <input type="text" name="descripcion_reunion" value={formData.descripcion_reunion} onChange={handleChange}/>
@@ -147,10 +200,12 @@ const ReunionDetalle = () => {
                         <input type="time" name="hora_inicio" value={formData.hora_inicio} onChange={handleChange}/>
                       </div>
 
+
                       <div style={{marginBottom:"13px"}}>
                         <label>Hora Termino:</label>
                         <input type="time" name="hora_termino" value={formData.hora_termino} onChange={handleChange}/>
                       </div>
+
 
                       <div style={{ marginBottom: "13px" }}>
                         <label>Estado:</label>
@@ -160,18 +215,16 @@ const ReunionDetalle = () => {
                           <option value="3">Realizada</option>
                         </select>
                       </div>
-
-                      
-                      <button type="submit">Guardar Cambios</button>
-                      <button onClick={() => setMostrarModal(false)} type="button">Cancelar</button>
+                      <div  style={{ display: "flex", justifyContent: "flex-end",  gap: "90px", marginTop: "20px"}}>
+                      <button type="submit" style={{ alignSelf: "flex-end", padding: "8px 16px", background: "#003366",color: "white", border: "none", borderRadius: "5px",cursor: "pointer"}}>Guardar</button>
+                      <button onClick={() => setMostrarModal(false)} type="button" style={{ alignSelf: "flex-end", padding: "8px 16px", background: "#ccc",color: "#333", border: "none", borderRadius: "5px",cursor: "pointer"}} >Cancelar</button>
+                      </div>
                     </div>    
                   </form>
                 </div>
               </div>
             )}
-
         </div>
-        
         {puedeEditarSubirActa&& (
           <>
             <h3>📋 Lista de Asistencias</h3>
@@ -183,31 +236,44 @@ const ReunionDetalle = () => {
                     setAsistencias(nuevas);
                   }
                 }}/>
-
             <div className="upload-section">
               <h3>📄 Acta de Reunión (PDF)</h3>
                 <div style={{display:"grid",alignItems: "center", gap: "8px" }}>
-
-                  
                     <>
-                      <input type="file" accept="application/pdf" onChange={handlePdfChange} />
-                      <button onClick={handleUploadPdf}>Subir Acta</button>
+                    {!reunion.acta_pdf &&(
+                      <>
+                        <input type="file" accept="application/pdf" onChange={handlePdfChange} />
+                        <button onClick={handleUploadPdf} style={{ alignSelf: "flex-end", padding: "8px 16px", background: "#003366",color: "white", border: "none", borderRadius: "5px",cursor: "pointer", width:"100px"}} >Subir Acta</button>
+                      </>
+                    )}
+                    
                     </>
-                  
-
                 </div>
             </div>
           </>
         )}
-      
+        
+        {!puedeEditarSubirActa &&!reunion.acta_pdf && !selectedPdf && (
+          <div style={{ marginTop: "20px",justifyContent: "center",display:"grid",alignItems: "center", gap: "8px" ,textAlign: "center"}}>
+          <h2>El acta de la reunión aún no ha sido publicada.</h2>
+          <p>Consulta con tu Directiva!</p>
+          </div>
+        )}
       {reunion.acta_pdf && !selectedPdf && (
         <div className="pdf-viewer">
           <embed
-            src={`http://localhost:3000${reunion.acta_pdf}`}
+            src={`${API_URL}${reunion.acta_pdf}`}
             type="application/pdf"
             />
           </div>
+        )} 
+        {puedeEditarSubirActa&& (
+        <div style={{ marginTop: "20px",justifyContent: "center",display:"grid",alignItems: "center", gap: "8px" }}>
+        {reunion.acta_pdf && (
+          <button onClick={handleDeletePdf}   style={{ alignSelf: "flex-left", padding: "8px 16px", background: "#cc0000",color: "white", border: "none", borderRadius: "5px",cursor: "pointer",width:"200px"}} >Eliminar Acta</button>
         )}
+        </div>
+      )}
       </div>
     );
 };

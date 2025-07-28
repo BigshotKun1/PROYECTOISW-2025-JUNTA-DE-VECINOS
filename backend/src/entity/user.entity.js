@@ -27,6 +27,11 @@ const UserSchema = new EntitySchema({
       nullable: false,
       unique: true,
     },
+    certificadoResidencia_pdf: {
+      type: "varchar",
+      length: 255,
+      nullable: true,
+    },
     password: {
       type: "varchar",
       nullable: false,
@@ -46,6 +51,10 @@ const UserSchema = new EntitySchema({
       type: "int",
       nullable: false,
     },
+    fechaCertificadoResidencia: {
+      type: "timestamp with time zone",
+      nullable: true,
+    },
   },
   indices: [
     {
@@ -63,16 +72,17 @@ const UserSchema = new EntitySchema({
       columns: ["email"],
       unique: true,
     },
-  ], relations: {
+  ],
+  relations: {
     asistencias: {
       target: "Asistencia_Reunion",
       type: "one-to-many",
-      inverseSide: "id_usuario", 
+      inverseSide: "id_usuario",
     },
     votaciones: {
       target: "Votaciones",
       type: "one-to-many",
-      inverseSide: "id_usuario",  // corresponde al campo many-to-one en Votaciones
+      inverseSide: "id_usuario", // corresponde al campo many-to-one en Votaciones
     },
     rol: {
       target: "Rol",
