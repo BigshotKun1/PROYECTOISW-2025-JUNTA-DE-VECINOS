@@ -52,8 +52,8 @@ console.log("FECHA VOTACION",form.fecha_votacion)
       opciones: ["", ""]
     });
     setShowConfirm(false);
-    setSuccessMsg("Votación creada exitosamente ✔"); // <-- muestra el mensaje
-    setTimeout(() => setSuccessMsg(""), 2500); // <-- oculta el mensaje después de 2.5s
+    setSuccessMsg("Votación creada exitosamente ✔");
+    setTimeout(() => setSuccessMsg(""), 2500);
   };
 
   const handleConfirmNo = () => {
@@ -65,7 +65,6 @@ console.log("FECHA VOTACION",form.fecha_votacion)
   return (
     <div className="modal-overlay">
       <div className="modal-votacion">
-        {/* Mensaje de éxito */}
         {successMsg && (
           <div style={{
             background: "#e6ffe6",
@@ -136,29 +135,30 @@ console.log("FECHA VOTACION",form.fecha_votacion)
           </div>
           <div>
             <label>Opciones para votar:</label>
-            {form.opciones.map((op, idx) => (
-              <div key={idx} style={{ display: 'flex', alignItems: 'center', marginBottom: '0.5rem' }}>
-                <input
-                  type="text"
-                  value={op}
-                  onChange={e => handleOpcionChange(idx, e.target.value)}
-                  className="modal-input"
-                  placeholder={`Opción ${idx + 1}`}
-                  required
-                />
-                {form.opciones.length > 1 && (
-                  <button type="button" className="btn btn-danger" style={{marginLeft: 8}} onClick={() => eliminarOpcion(idx)}>🗑</button>
-                )}
-              </div>
-            ))}
-            <button type="button" className="btn btn-secondary" onClick={agregarOpcion}>+ Agregar opción</button>
+            <div className="opciones-scroll">
+              {form.opciones.map((op, idx) => (
+                <div key={idx} style={{ display: 'flex', alignItems: 'center', marginBottom: '0.5rem' }}>
+                  <input
+                    type="text"
+                    value={op}
+                    onChange={e => handleOpcionChange(idx, e.target.value)}
+                    className="modal-input"
+                    placeholder={`Opción ${idx + 1}`}
+                    required
+                  />
+                  {form.opciones.length > 1 && (
+                    <button type="button" className="btn btn-danger" style={{marginLeft: 8}} onClick={() => eliminarOpcion(idx)}>🗑</button>
+                  )}
+                </div>
+              ))}
+              <button type="button" className="btn btn-secondary" onClick={agregarOpcion}>+ Agregar opción</button>
+            </div>
           </div>
           <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '1.5rem', gap: '1rem' }}>
             <button type="submit" className="btn btn-primary">Confirmar</button>
             <button type="button" className="btn btn-danger" onClick={onClose}>Cancelar</button>
           </div>
         </form>
-        {/* Cuadro de advertencia */}
         {showConfirm && (
           <div className="modal-advertencia">
             <p style={{marginBottom: '1rem', color: '#b85c00', fontWeight: 500}}>
