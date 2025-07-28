@@ -55,7 +55,7 @@ export async function isAdminyDirectiva(req, res, next) {
     const rolUsuario = userFound.rol?.nombreRol?.toLowerCase();
 
     // ✅ Si es administrador, permite el acceso directamente
-    if (rolUsuario === "administrador") {
+    if (rolUsuario === "Administrador") {
       return next();
     }
 
@@ -75,9 +75,9 @@ export async function isAdminyDirectiva(req, res, next) {
     }
 
     // ✅ Verificar si su rol dentro de la directiva es válido
-    const rolDirectiva = await miembroVigente.rol?.nombreRol?.toLowerCase();
-    const rolesPermitidos = ["Presidente", "Tesorero", "Secretario"];
-
+   const rolDirectiva = await miembroVigente.id_rol;
+    //const rolesPermitidos = ["Presidente", "Tesorero", "Secretario"];
+    const rolesPermitidos = [2, 4, 5];
     if (!rolesPermitidos.includes(rolDirectiva)) {
       return handleErrorClient(res, 403, "Rol dentro de la directiva no autorizado");
     }

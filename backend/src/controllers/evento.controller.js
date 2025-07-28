@@ -15,6 +15,7 @@ import {
 } from "../handlers/responseHandlers.js";
 import { notifyVecinosEvento, notifyVecinosEventoActualizado, notifyVecinosEventoEliminado  } from "../services/email.service.js"
 import DirectivaMiembro from "../entity/DirectivaMiembros.js";
+import { AppDataSource } from "../config/configDb.js";
 
 
 // Crear evento (solo directiva)
