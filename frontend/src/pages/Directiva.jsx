@@ -1,7 +1,7 @@
 
 import useDirectiva from '@hooks/directiva/useGetDirectiva';
 import TablaDirectiva from '@components/directiva/TablaDirectiva.jsx';
-import ModalCrearMiembro from '@components/directiva/ModalCrearMiembroDirectiva.jsx';
+import ModalCrearDirectiva from '@components/directiva/ModalCrearMiembroDirectiva.jsx';
 import Table from '@components/Table';
 import Search from '../components/Search';
 import Popup from '../components/Popup';  // Reemplaza o crea uno para modal Crear/Editar miembro
@@ -14,18 +14,19 @@ import { useCallback, useState } from 'react';
 import '@styles/users.css';
 import { useEditDirectiva } from '@hooks/directiva/useEditDirectiva';
 import { useDeleteDirectiva } from '@hooks/directiva/useDeleteDirectiva';
+import { createDirectiva } from '@services/directiva.service.js';
 import "@styles/directiva.css";
+
+
 
 const DirectivaPage = () => {
   const { directiva = [], fetchDirectiva, setDirectiva } = useDirectiva();
   const [filterNombre, setFilterNombre] = useState('');
   const [dataSelected, setDataSelected] = useState([]);
+  const [isModalCrearOpen, setIsModalCrearOpen] = useState(false);
 
   const {
     handleClickEdit,
-    handleEdit,
-    isPopupOpen,
-    setIsPopupOpen,
   } = useEditDirectiva(setDirectiva);
 
   const { handleDelete } = useDeleteDirectiva(fetchDirectiva, setDataSelected);
@@ -40,10 +41,9 @@ const DirectivaPage = () => {
     setDataSelected(selectedItems);
   }, []);
 
-  const handleAddClick = () => {
-    setDataSelected([]);
-    setIsPopupOpen(true);
-  };
+ const handleAddClick = () => {
+  setIsModalCrearOpen(true); // ✅ Usa React, no Bootstrap DOM directamente
+};
 
    const isPeriodoActivo = (periodo) => {
     if (!periodo || !periodo.fechaInicio || !periodo.fechaTermino) return false;
@@ -52,6 +52,18 @@ const DirectivaPage = () => {
     const termino = new Date(periodo.fechaTermino);
     return hoy >= inicio && hoy <= termino;
   };
+
+  const handleCrearDirectiva = async (nuevaDirectiva) => {
+  try {
+    await createDirectiva(nuevaDirectiva);
+    await fetchDirectiva(); // recarga la tabla después de crear
+    setIsModalCrearOpen(false); // cierra el modal
+  } catch (error) {
+    console.error("Error al crear directiva:", error);
+  }
+};
+
+
 
   const columns = [
     { title: "RUT", field: "usuario.rut", width: 150, responsive: 0 },
@@ -109,12 +121,13 @@ const DirectivaPage = () => {
         />
       </div>
 
-      <Popup
-        show={isPopupOpen}
-        setShow={setIsPopupOpen}
-        data={dataSelected}
-        action={handleEdit}
-      />
+      {isModalCrearOpen && (
+  <ModalCrearDirectiva
+    isOpen={isModalCrearOpen}
+    onClose={() => setIsModalCrearOpen(false)}
+    onCreate={handleCrearDirectiva} // ya la definiste antes
+  />
+)}
     </div>
   );
 };

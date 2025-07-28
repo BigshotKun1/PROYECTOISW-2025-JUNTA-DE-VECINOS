@@ -1,72 +1,101 @@
-// components/directiva/ModalCrearMiembro.jsx
-import React, { useState } from 'react';
-import useCreateDirectiva from '@hooks/directiva/useCreateDirectiva'; // tu hook para crear
+import { useState } from "react";
+import { createDirectiva } from "@services/directiva.service.js";
 
-const ModalCrearMiembro = ({ onClose }) => {
-  const { crearMiembro } = useCreateDirectiva();
-  const [idUsuario, setIdUsuario] = useState('');
-  const [idRol, setIdRol] = useState('');
-  const [idPeriodo, setIdPeriodo] = useState('');
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
+const DirectivaPage = () => {
+  const [rut, setRut] = useState("");
+  const [rol, setRol] = useState("");
+  const [fechaInicio, setFechaInicio] = useState("");
+  const [fechaTermino, setFechaTermino] = useState("");
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setLoading(true);
-    setError(null);
-
+  const handleCrear = async () => {
     try {
-      await crearMiembro({ id_usuario: idUsuario, id_rol: idRol, id_periodo: idPeriodo });
-      alert('Miembro agregado correctamente');
-      onClose();
+      await createDirectiva({ rut, rol, fechaInicio, fechaTermino });
+      // Limpia el formulario
+      setRut("");
+      setRol("");
+      setFechaInicio("");
+      setFechaTermino("");
+      // Cierra el modal
+      const modalElement = document.getElementById("crearModal");
+      const modalInstance = bootstrap.Modal.getInstance(modalElement);
+      modalInstance.hide();
+      // Opcional: recargar datos
     } catch (err) {
-      setError(err.message || 'Error inesperado');
-    } finally {
-      setLoading(false);
+      console.error("Error al crear directiva:", err);
     }
   };
 
   return (
-    <div className="modal-overlay">
-      <div className="modal-content">
-        <h2>Agregar Miembro a la Directiva</h2>
-        {error && <p style={{ color: 'red' }}>{error}</p>}
-        <form onSubmit={handleSubmit}>
-          <label>
-            ID Usuario:
-            <input
-              type="text"
-              value={idUsuario}
-              onChange={(e) => setIdUsuario(e.target.value)}
-              required
-            />
-          </label>
-          <label>
-            ID Rol:
-            <input
-              type="text"
-              value={idRol}
-              onChange={(e) => setIdRol(e.target.value)}
-              required
-            />
-          </label>
-          <label>
-            ID Periodo:
-            <input
-              type="text"
-              value={idPeriodo}
-              onChange={(e) => setIdPeriodo(e.target.value)}
-              required
-            />
-          </label>
-          <div className="modal-actions">
-            <button type="submit" disabled={loading}>{loading ? 'Guardando...' : 'Agregar'}</button>
-            <button type="button" onClick={onClose} disabled={loading}>Cancelar</button>
+    <div className="container mt-4">
+      {/* Modal Bootstrap */}
+      <div className="modal fade" id="crearModal" tabIndex="-1" aria-hidden="true">
+        <div className="modal-dialog">
+          <div className="modal-content">
+            <div className="modal-header">
+              <h5 className="modal-title">Crear Directiva</h5>
+              <button
+                type="button"
+                className="btn-close"
+                data-bs-dismiss="modal"
+              ></button>
+            </div>
+            <div className="modal-body">
+              <div className="mb-3">
+                <label className="form-label">RUT</label>
+                <input
+                  type="text"
+                  className="form-control"
+                  value={rut}
+                  onChange={(e) => setRut(e.target.value)}
+                />
+              </div>
+              <div className="mb-3">
+                <label className="form-label">Rol</label>
+                <input
+                  type="text"
+                  className="form-control"
+                  value={rol}
+                  onChange={(e) => setRol(e.target.value)}
+                />
+              </div>
+              <div className="mb-3">
+                <label className="form-label">Fecha Inicio</label>
+                <input
+                  type="date"
+                  className="form-control"
+                  value={fechaInicio}
+                  onChange={(e) => setFechaInicio(e.target.value)}
+                />
+              </div>
+              <div className="mb-3">
+                <label className="form-label">Fecha Término</label>
+                <input
+                  type="date"
+                  className="form-control"
+                  value={fechaTermino}
+                  onChange={(e) => setFechaTermino(e.target.value)}
+                />
+              </div>
+            </div>
+            <div className="modal-footer">
+              <button
+                onClick={handleCrear}
+                className="btn btn-success"
+              >
+                Crear
+              </button>
+              <button
+                className="btn btn-secondary"
+                data-bs-dismiss="modal"
+              >
+                Cancelar
+              </button>
+            </div>
           </div>
-        </form>
+        </div>
       </div>
     </div>
   );
 };
 
-export default ModalCrearMiembro;
+export default DirectivaPage;
